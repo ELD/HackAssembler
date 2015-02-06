@@ -8,10 +8,6 @@ using namespace boost::unit_test;
 
 bool init_function();
 
-/**
- * Test suite functions
-*/
-
 void parser_init_test_case();
 void parser_command_type_test_case();
 
