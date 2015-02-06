@@ -6,6 +6,8 @@ namespace hack {
     {
         _currentCommand = "";
         _fileHead = _file->tellg();
+        std::regex lCommand(R"(\(.*\))", std::regex_constants::icase);
+        std::regex aCommand(R"(\@[\w*|\d*]*)", std::regex_constants::icase);
     }
 
     Parser::~Parser()
@@ -56,8 +58,6 @@ namespace hack {
 
     COMMAND_TYPE Parser::commandType() const
     {
-        std::regex lCommand(R"(\(.*\))", std::regex_constants::icase);
-        std::regex aCommand(R"(\@[\w*|\d*]*)", std::regex_constants::icase);
         if (std::regex_match(_currentCommand, lCommand)) {
             return L_COMMAND;
         } else if (std::regex_match(_currentCommand, aCommand)) {
@@ -70,6 +70,30 @@ namespace hack {
     std::string Parser::getCurrentCommand() const
     {
         return _currentCommand;
+    }
+
+    std::string Parser::symbol()
+    {
+        if (commandType() == L_COMMAND || commandType() == A_COMMAND) {
+
+        }
+
+        return "";
+    }
+
+    std::string Parser::dest()
+    {
+        return "";
+    }
+
+    std::string Parser::comp()
+    {
+        return "";
+    }
+
+    std::string Parser::jump()
+    {
+        return "";
     }
 
     void Parser::trimCommand(std::string& commandToTrim)
