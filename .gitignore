@@ -1,2 +1,5 @@
-target
-build/
+target/*
+build/*
+
+!target/.gitkeep
+!build/.gitkeep
