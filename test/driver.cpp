@@ -10,6 +10,7 @@ bool init_function();
 
 void parser_init_test_case();
 void parser_command_type_test_case();
+void parser_token_test_case();
 
 int main(int argc, char* argv[])
 {
@@ -27,6 +28,7 @@ bool init_function()
     auto parser_suite = BOOST_TEST_SUITE("Parser_Test_Suite");
     parser_suite->add(BOOST_TEST_CASE(&parser_init_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_command_type_test_case));
+    parser_suite->add(BOOST_TEST_CASE(&parser_token_test_case));
 
     framework::master_test_suite().add(parser_suite);
 
@@ -45,8 +47,7 @@ void parser_init_test_case()
 
 void parser_command_type_test_case()
 {
-    auto fileName = framework::master_test_suite().argv[1];
-    hack::Parser parser(fileName);
+    hack::Parser parser;
 
     std::string aCommand = "@R0";
     parser.setCurrentCommand(aCommand);
@@ -59,4 +60,20 @@ void parser_command_type_test_case()
     std::string lCommand = "(LABEL)";
     parser.setCurrentCommand(lCommand);
     BOOST_CHECK_MESSAGE(parser.commandType() == 0, "Should be L_COMMAND but was: " << getCommandString(parser.commandType()));
+}
+
+void parser_token_test_case()
+{
+    hack::Parser parser;
+    std::string label = "(MY_LABEL)";
+    parser.setCurrentCommand(label);
+    BOOST_CHECK_MESSAGE(parser.symbol() == "MY_LABEL", "Should be MY_LABEL but was: " << parser.symbol());
+
+    label = "@R0";
+    parser.setCurrentCommand(label);
+    BOOST_CHECK_MESSAGE(parser.symbol() == "R0", "Should be R0 but was: " << parser.symbol());
+
+    label = "@SP";
+    parser.setCurrentCommand(label);
+    BOOST_CHECK_MESSAGE(parser.symbol() == "SP", "Should be SP but was: " << parser.symbol());
 }

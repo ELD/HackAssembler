@@ -8,6 +8,7 @@ namespace hack {
     class Parser
     {
     public:
+        Parser();
         Parser (const std::string);
         virtual ~Parser ();
         std::string nextLine() const;
