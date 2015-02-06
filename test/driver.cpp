@@ -2,8 +2,7 @@
 #define BOOST_TEST_MODULE HACK_ASM
 #include <boost/test/unit_test.hpp>
 #include "../headers/parser.hpp"
-
-std::string getCommandString(int commandType);
+#include "utility.hpp"
 
 int unit_test_main(boost::unit_test::init_unit_test_func init_func, int argc, char* argv[])
 {
@@ -13,6 +12,8 @@ int unit_test_main(boost::unit_test::init_unit_test_func init_func, int argc, ch
     } else {
         std::cout << "No file provided\nExample usage: ./tester [file]" << std::endl;
     }
+
+    // Tests
 }
 
 BOOST_AUTO_TEST_CASE(Parser_Creation)
@@ -39,21 +40,4 @@ BOOST_AUTO_TEST_CASE(Parser_Command_Type)
     std::string lCommand = "(LABEL)";
     parser.setCurrentCommand(lCommand);
     BOOST_CHECK_MESSAGE(parser.commandType() == 0, "Should be L_COMMAND but was: " << getCommandString(parser.commandType()));
-}
-
-std::string getCommandString(int commandType)
-{
-    switch (commandType) {
-        case 0:
-            return "L_COMMAND";
-        break;
-        case 1:
-            return "A_COMMAND";
-        break;
-        case 2:
-            return "C_COMMAND";
-        break;
-    }
-
-    return "NO_COMMAND";
 }
