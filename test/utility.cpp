@@ -1,3 +1,5 @@
+#include "utility.hpp"
+
 std::string getCommandString(int commandType)
 {
     switch (commandType) {

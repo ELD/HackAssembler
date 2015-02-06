@@ -20,7 +20,7 @@ $(hackasm_BUILDDIR)/%.o: $(hackasm_SRCDIR)/%.$(hackasm_SRCEXT)
 	@echo " $(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<"; $(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<
 
 test:
-	$(CXX) $(CXXFLAGS) $(INC) test/driver.cpp $(LIB) -o target/tester build/parser.o $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(INC) test/driver.cpp test/utility.cpp $(LIB) -o target/tester build/parser.o $(LDFLAGS)
 
 clean:
 	@echo " Cleaning...";
