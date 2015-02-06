@@ -8,6 +8,7 @@ namespace hack {
     class Parser
     {
     public:
+        Parser();
         Parser (const std::string);
         virtual ~Parser ();
         std::string nextLine() const;
@@ -15,6 +16,10 @@ namespace hack {
         void advance();
         COMMAND_TYPE commandType() const;
         std::string getCurrentCommand() const;
+        std::string symbol();
+        std::string dest();
+        std::string comp();
+        std::string jump();
         void rewind();
 
         // Accessor methods for testing
@@ -24,6 +29,9 @@ namespace hack {
 
         std::unique_ptr<std::ifstream> _file;
         std::string _currentCommand;
+
+        std::regex lCommand;
+        std::regex aCommand;
 
         size_t _fileHead;
     };

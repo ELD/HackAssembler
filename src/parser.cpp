@@ -2,10 +2,19 @@
 
 namespace hack {
 
+    Parser::Parser()
+    {
+        _currentCommand = "";
+        lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
+        aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
+    }
+
     Parser::Parser(const std::string fileName) : _file(std::unique_ptr<std::ifstream>(new std::ifstream(fileName)))
     {
         _currentCommand = "";
         _fileHead = _file->tellg();
+        lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
+        aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
     }
 
     Parser::~Parser()
@@ -56,8 +65,6 @@ namespace hack {
 
     COMMAND_TYPE Parser::commandType() const
     {
-        std::regex lCommand(R"(\(.*\))", std::regex_constants::icase);
-        std::regex aCommand(R"(\@[\w*|\d*]*)", std::regex_constants::icase);
         if (std::regex_match(_currentCommand, lCommand)) {
             return L_COMMAND;
         } else if (std::regex_match(_currentCommand, aCommand)) {
@@ -70,6 +77,35 @@ namespace hack {
     std::string Parser::getCurrentCommand() const
     {
         return _currentCommand;
+    }
+
+    std::string Parser::symbol()
+    {
+        if (commandType() == A_COMMAND) {
+            auto first = _currentCommand.find_first_not_of("@");
+            return _currentCommand.substr(first);
+        } else if (commandType() == L_COMMAND) {
+            auto first = _currentCommand.find_first_not_of("(");
+            auto second = _currentCommand.find_last_not_of(")");
+            return _currentCommand.substr(first, second - first + 1);
+        }
+
+        return "";
+    }
+
+    std::string Parser::dest()
+    {
+        return "";
+    }
+
+    std::string Parser::comp()
+    {
+        return "";
+    }
+
+    std::string Parser::jump()
+    {
+        return "";
     }
 
     void Parser::trimCommand(std::string& commandToTrim)
