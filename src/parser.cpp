@@ -82,7 +82,7 @@ namespace hack {
         return _currentCommand;
     }
 
-    std::string Parser::symbol()
+    std::string Parser::getSymbol()
     {
         if (commandType() == A_COMMAND) {
             auto first = _currentCommand.find_first_not_of("@");

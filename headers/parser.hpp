@@ -16,7 +16,7 @@ namespace hack {
         void advance();
         COMMAND_TYPE commandType() const;
         std::string getCurrentCommand() const;
-        std::string symbol();
+        std::string getSymbol();
         std::string getDestBits();
         std::string getCompBits();
         std::string getJumpBits();

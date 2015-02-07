@@ -118,15 +118,15 @@ void parser_token_test_case()
     hack::Parser parser;
     std::string label = "(MY_LABEL)";
     parser.setCurrentCommand(label);
-    BOOST_CHECK_MESSAGE(parser.symbol() == "MY_LABEL", "Should be MY_LABEL but was: " << parser.symbol());
+    BOOST_CHECK_MESSAGE(parser.getSymbol() == "MY_LABEL", "Should be MY_LABEL but was: " << parser.getSymbol());
 
     label = "@R0";
     parser.setCurrentCommand(label);
-    BOOST_CHECK_MESSAGE(parser.symbol() == "R0", "Should be R0 but was: " << parser.symbol());
+    BOOST_CHECK_MESSAGE(parser.getSymbol() == "R0", "Should be R0 but was: " << parser.getSymbol());
 
     label = "@SP";
     parser.setCurrentCommand(label);
-    BOOST_CHECK_MESSAGE(parser.symbol() == "SP", "Should be SP but was: " << parser.symbol());
+    BOOST_CHECK_MESSAGE(parser.getSymbol() == "SP", "Should be SP but was: " << parser.getSymbol());
 }
 
 void parser_dest_test_case()

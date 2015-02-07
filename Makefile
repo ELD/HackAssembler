@@ -18,7 +18,7 @@ INC := -I headers -I $(BOOST_LIBS)/include
 
 $(hackasm_TARGET): $(hackasm_OBJECTS)
 	@echo " Linking..."
-	@echo " $(CXX) $^ -o $(hackasm_TARGET) $(LIB)"; $(CXX) $^ -o $(hackasm_TARGET) $(LIB) $(LDFLAGS)
+	@echo " $(CXX) $^ -o $(hackasm_TARGET) $(LIB)"; $(CXX) $^ -o $(hackasm_TARGET) $(LIB)
 
 $(hackasm_BUILDDIR)/%.o: $(hackasm_SRCDIR)/%.$(hackasm_SRCEXT)
 	@mkdir -p $(hackasm_BUILDDIR)
