@@ -3,6 +3,7 @@
 #define BOOST_TEST_DYN_LINK
 // #define BOOST_TEST_MODULE HACK_ASM
 #include <boost/test/unit_test.hpp>
+#include <sstream>
 #include "../headers/parser.hpp"
 #include "../headers/symbol_table.hpp"
 #include "utility.hpp"
@@ -19,7 +20,6 @@ void parser_token_test_case();
 
 void symbol_table_init_test_case();
 void symbol_table_insert_test_case();
-void symbol_table_retrieve_test_case();
 void symbol_table_contains_test_case();
 
 int main(int argc, char* argv[])
@@ -43,7 +43,6 @@ bool init_function()
     auto symbol_table_test_suite = BOOST_TEST_SUITE("Symbol_Table_Test_Suite");
     symbol_table_test_suite->add(BOOST_TEST_CASE(&symbol_table_init_test_case));
     symbol_table_test_suite->add(BOOST_TEST_CASE(&symbol_table_insert_test_case));
-    symbol_table_test_suite->add(BOOST_TEST_CASE(&symbol_table_retrieve_test_case));
     symbol_table_test_suite->add(BOOST_TEST_CASE(&symbol_table_contains_test_case));
 
     framework::master_test_suite().add(parser_suite);
@@ -126,15 +125,22 @@ void symbol_table_init_test_case()
 
 void symbol_table_insert_test_case()
 {
+    hack::SymbolTable symbols;
 
-}
-
-void symbol_table_retrieve_test_case()
-{
-
+    for (int i = 0; i < 15; ++i) {
+        std::ostringstream oss;
+        oss << "test" << i;
+        symbols.addSymbol(oss.str(), i);
+        BOOST_CHECK_MESSAGE(symbols.retrieveSymbol(oss.str()) == i,
+            "Should be " << i << " but was: " << symbols.retrieveSymbol(oss.str()));
+    }
 }
 
 void symbol_table_contains_test_case()
 {
+    hack::SymbolTable symbols;
 
+    BOOST_CHECK_MESSAGE(symbols.contains("SP") == true, "Should have contained 'SP' but it didn't.");
+    BOOST_CHECK_MESSAGE(symbols.contains("SCREEN") == true, "Should have contained 'SCREEN'");
+    BOOST_CHECK_MESSAGE(symbols.contains("GABAGE_SYMBOL") == false, "Should not have contained 'GARBAGE_SYMBOL'");
 }
