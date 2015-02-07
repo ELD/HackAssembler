@@ -21,6 +21,7 @@ void parser_init_test_case();
 void parser_command_type_test_case();
 void parser_token_test_case();
 void parser_dest_test_case();
+void parser_comp_test_case();
 
 void symbol_table_init_test_case();
 void symbol_table_insert_test_case();
@@ -129,35 +130,64 @@ void parser_dest_test_case()
 
     std::string command = "D;JMP";
     parser.setCurrentCommand(command);
-    BOOST_CHECK_MESSAGE(parser.dest() == "000", "Should be '000' but was " << parser.dest());
+    BOOST_CHECK_MESSAGE(parser.getDestBits() == "000", "Should be '000' but was " << parser.getDestBits());
 
     command = "M=1";
     parser.setCurrentCommand(command);
-    BOOST_CHECK_MESSAGE(parser.dest() == "001", "Should be '001' but was " << parser.dest());
+    BOOST_CHECK_MESSAGE(parser.getDestBits() == "001", "Should be '001' but was " << parser.getDestBits());
 
     command = "D=D+1";
     parser.setCurrentCommand(command);
-    BOOST_CHECK_MESSAGE(parser.dest() == "010", "Should be '010' but was " << parser.dest());
+    BOOST_CHECK_MESSAGE(parser.getDestBits() == "010", "Should be '010' but was " << parser.getDestBits());
 
     command = "MD=D+1";
     parser.setCurrentCommand(command);
-    BOOST_CHECK_MESSAGE(parser.dest() == "011", "Should be '011' but was " << parser.dest());
+    BOOST_CHECK_MESSAGE(parser.getDestBits() == "011", "Should be '011' but was " << parser.getDestBits());
 
     command = "A=10";
     parser.setCurrentCommand(command);
-    BOOST_CHECK_MESSAGE(parser.dest() == "100", "Should be '100' but was " << parser.dest());
+    BOOST_CHECK_MESSAGE(parser.getDestBits() == "100", "Should be '100' but was " << parser.getDestBits());
 
     command = "AM=10";
     parser.setCurrentCommand(command);
-    BOOST_CHECK_MESSAGE(parser.dest() == "101", "Should be '101' but was " << parser.dest());
+    BOOST_CHECK_MESSAGE(parser.getDestBits() == "101", "Should be '101' but was " << parser.getDestBits());
 
     command = "AD=10";
     parser.setCurrentCommand(command);
-    BOOST_CHECK_MESSAGE(parser.dest() == "110", "Should be '110' but was " << parser.dest());
+    BOOST_CHECK_MESSAGE(parser.getDestBits() == "110", "Should be '110' but was " << parser.getDestBits());
 
     command = "AMD=D+1";
     parser.setCurrentCommand(command);
-    BOOST_CHECK_MESSAGE(parser.dest() == "111", "Should be '111' but was " << parser.dest());
+    BOOST_CHECK_MESSAGE(parser.getDestBits() == "111", "Should be '111' but was " << parser.getDestBits());
+}
+
+void parser_comp_test_case()
+{
+    hack::Parser parser;
+
+    std::string command = "0;JMP";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getCompBits() == "0101010", "Should be '0101010' but was " << parser.getCompBits());
+
+    command = "1;JMP";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getCompBits() == "0111111", "Should be '0111111' but was " << parser.getCompBits());
+
+    command = "-1;JMP";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getCompBits() == "0111010", "should be '0111010' but was " << parser.getCompBits());
+
+    command = "D;JMP";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getCompBits() == "0001100", "should be '0001100' but was " << parser.getCompBits());
+
+    command = "D=D+A";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getCompBits() == "0000010", "should be '0000010' but was " << parser.getCompBits());
+
+    command = "M=M+1";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getCompBits() == "1110111", "should be '1110111' but was " << parser.getCompBits());
 }
 
 void symbol_table_init_test_case()

@@ -17,9 +17,9 @@ namespace hack {
         COMMAND_TYPE commandType() const;
         std::string getCurrentCommand() const;
         std::string symbol();
-        std::string dest();
-        std::string comp();
-        std::string jump();
+        std::string getDestBits();
+        std::string getCompBits();
+        std::string getJumpBits();
         void rewind();
 
         // Accessor methods for testing

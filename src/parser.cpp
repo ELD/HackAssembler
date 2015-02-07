@@ -94,7 +94,7 @@ namespace hack {
         return "";
     }
 
-    std::string Parser::dest()
+    std::string Parser::getDestBits()
     {
         if (commandType() != C_COMMAND) {
             return "";
@@ -112,12 +112,25 @@ namespace hack {
         return DestTable::lookup[dest];
     }
 
-    std::string Parser::comp()
+    std::string Parser::getCompBits()
     {
+        if (commandType() != C_COMMAND) {
+            return "";
+        }
+
+        auto equalPos = _currentCommand.find("=");
+        auto semiColonPos = _currentCommand.find(";");
+
+        if (equalPos == std::string::npos && semiColonPos == std::string::npos) {
+            return "";
+        }
+
+
+
         return "";
     }
 
-    std::string Parser::jump()
+    std::string Parser::getJumpBits()
     {
         return "";
     }
