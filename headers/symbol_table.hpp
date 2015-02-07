@@ -1,3 +1,6 @@
+#ifndef _SYMBOL_TABLE_H_
+#define _SYMBOL_TABLE_H_
+
 #include "headers.hpp"
 #include <map>
 
@@ -14,3 +17,5 @@ namespace hack {
 		std::unique_ptr<std::map<std::string, int>> _symbolTable;
 	};
 }
+
+#endif
