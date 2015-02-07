@@ -1,5 +1,6 @@
 #include "../headers/parser.hpp"
 #include "../headers/dest_table.hpp"
+#include "../headers/comp_table.hpp"
 
 namespace hack {
 
@@ -125,7 +126,16 @@ namespace hack {
             return "";
         }
 
-
+        std::string comp;
+        if (equalPos != std::string::npos) {
+            comp = _currentCommand.substr(equalPos + 1);
+            auto bitPair = CompTable::lookup[comp];
+            return bitPair.first + bitPair.second;
+        } else if (semiColonPos != std::string::npos) {
+            comp = _currentCommand.substr(0, semiColonPos);
+            auto bitPair = CompTable::lookup[comp];
+            return bitPair.first + bitPair.second;
+        }
 
         return "";
     }

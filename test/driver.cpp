@@ -54,6 +54,7 @@ bool init_function()
     parser_suite->add(BOOST_TEST_CASE(&parser_command_type_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_token_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_dest_test_case));
+    parser_suite->add(BOOST_TEST_CASE(&parser_comp_test_case));
 
     auto symbol_table_suite = BOOST_TEST_SUITE("Symbol_Table_Test_Suite");
     symbol_table_suite->add(BOOST_TEST_CASE(&symbol_table_init_test_case));
