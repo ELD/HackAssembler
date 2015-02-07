@@ -23,6 +23,7 @@ void parser_token_test_case();
 void parser_dest_test_case();
 void parser_comp_test_case();
 void parser_jump_test_case();
+void parser_all_bits_test_case();
 
 void symbol_table_init_test_case();
 void symbol_table_insert_test_case();
@@ -57,6 +58,7 @@ bool init_function()
     parser_suite->add(BOOST_TEST_CASE(&parser_dest_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_comp_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_jump_test_case));
+    parser_suite->add(BOOST_TEST_CASE(&parser_all_bits_test_case));
 
     auto symbol_table_suite = BOOST_TEST_SUITE("Symbol_Table_Test_Suite");
     symbol_table_suite->add(BOOST_TEST_CASE(&symbol_table_init_test_case));
@@ -228,6 +230,23 @@ void parser_jump_test_case()
     command = "D;JMP";
     parser.setCurrentCommand(command);
     BOOST_CHECK_MESSAGE(parser.getJumpBits() == "111", "Should be '111' but was " << parser.getJumpBits());
+}
+
+void parser_all_bits_test_case()
+{
+    hack::Parser parser;
+    std::string command;
+    std::string allBits;
+
+    command = "D=D+1";
+    parser.setCurrentCommand(command);
+    allBits = parser.getCompBits() + parser.getDestBits() + parser.getJumpBits();
+    BOOST_CHECK_MESSAGE(allBits == "0011111010000", "Should be '0011111010000' but was " << allBits);
+
+    command = "D;JGE";
+    parser.setCurrentCommand(command);
+    allBits = parser.getCompBits() + parser.getDestBits() + parser.getJumpBits();
+    BOOST_CHECK_MESSAGE(allBits == "0001100000011", "Should be '0001100000011' but was " << allBits);
 }
 
 void symbol_table_init_test_case()
