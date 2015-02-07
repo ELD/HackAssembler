@@ -1,4 +1,5 @@
 #include "../headers/parser.hpp"
+#include "../headers/dest_table.hpp"
 
 namespace hack {
 
@@ -95,7 +96,20 @@ namespace hack {
 
     std::string Parser::dest()
     {
-        return "";
+        if (commandType() != C_COMMAND) {
+            return "";
+        }
+
+        // Check for equal sign
+        auto index = _currentCommand.find("=");
+        // if no equal sign, return null entry
+        if (index == std::string::npos) {
+            return DestTable::lookup[""];
+        }
+        // get substr and find key from dest table
+        auto dest = _currentCommand.substr(0, index);
+
+        return DestTable::lookup[dest];
     }
 
     std::string Parser::comp()

@@ -20,6 +20,7 @@ bool init_function();
 void parser_init_test_case();
 void parser_command_type_test_case();
 void parser_token_test_case();
+void parser_dest_test_case();
 
 void symbol_table_init_test_case();
 void symbol_table_insert_test_case();
@@ -51,29 +52,30 @@ bool init_function()
     parser_suite->add(BOOST_TEST_CASE(&parser_init_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_command_type_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_token_test_case));
+    parser_suite->add(BOOST_TEST_CASE(&parser_dest_test_case));
 
-    auto symbol_table_test_suite = BOOST_TEST_SUITE("Symbol_Table_Test_Suite");
-    symbol_table_test_suite->add(BOOST_TEST_CASE(&symbol_table_init_test_case));
-    symbol_table_test_suite->add(BOOST_TEST_CASE(&symbol_table_insert_test_case));
-    symbol_table_test_suite->add(BOOST_TEST_CASE(&symbol_table_contains_test_case));
+    auto symbol_table_suite = BOOST_TEST_SUITE("Symbol_Table_Test_Suite");
+    symbol_table_suite->add(BOOST_TEST_CASE(&symbol_table_init_test_case));
+    symbol_table_suite->add(BOOST_TEST_CASE(&symbol_table_insert_test_case));
+    symbol_table_suite->add(BOOST_TEST_CASE(&symbol_table_contains_test_case));
 
-    auto comp_table_test_suite = BOOST_TEST_SUITE("Comp_Table_Test_Suite");
-    comp_table_test_suite->add(BOOST_TEST_CASE(&comp_table_init_test_case));
-    comp_table_test_suite->add(BOOST_TEST_CASE(&comp_table_retrieve_test_case));
+    auto comp_table_suite = BOOST_TEST_SUITE("Comp_Table_Test_Suite");
+    comp_table_suite->add(BOOST_TEST_CASE(&comp_table_init_test_case));
+    comp_table_suite->add(BOOST_TEST_CASE(&comp_table_retrieve_test_case));
 
-    auto dest_table_test_suite = BOOST_TEST_SUITE("Dest_Table_Test_Suite");
-    dest_table_test_suite->add(BOOST_TEST_CASE(&dest_table_init_test_case));
-    dest_table_test_suite->add(BOOST_TEST_CASE(&dest_table_retrieve_test_case));
+    auto dest_table_suite = BOOST_TEST_SUITE("Dest_Table_Test_Suite");
+    dest_table_suite->add(BOOST_TEST_CASE(&dest_table_init_test_case));
+    dest_table_suite->add(BOOST_TEST_CASE(&dest_table_retrieve_test_case));
 
-    auto jump_table_test_suite = BOOST_TEST_SUITE("Jump_Table_Test_Suite");
-    jump_table_test_suite->add(BOOST_TEST_CASE(&jump_table_init_test_case));
-    jump_table_test_suite->add(BOOST_TEST_CASE(&jump_table_retrieve_test_case));
+    auto jump_table_suite = BOOST_TEST_SUITE("Jump_Table_Test_Suite");
+    jump_table_suite->add(BOOST_TEST_CASE(&jump_table_init_test_case));
+    jump_table_suite->add(BOOST_TEST_CASE(&jump_table_retrieve_test_case));
 
     framework::master_test_suite().add(parser_suite);
-    framework::master_test_suite().add(symbol_table_test_suite);
-    framework::master_test_suite().add(comp_table_test_suite);
-    framework::master_test_suite().add(dest_table_test_suite);
-    framework::master_test_suite().add(jump_table_test_suite);
+    framework::master_test_suite().add(symbol_table_suite);
+    framework::master_test_suite().add(comp_table_suite);
+    framework::master_test_suite().add(dest_table_suite);
+    framework::master_test_suite().add(jump_table_suite);
 
     return true;
 }
@@ -119,6 +121,43 @@ void parser_token_test_case()
     label = "@SP";
     parser.setCurrentCommand(label);
     BOOST_CHECK_MESSAGE(parser.symbol() == "SP", "Should be SP but was: " << parser.symbol());
+}
+
+void parser_dest_test_case()
+{
+    hack::Parser parser;
+
+    std::string command = "D;JMP";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.dest() == "000", "Should be '000' but was " << parser.dest());
+
+    command = "M=1";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.dest() == "001", "Should be '001' but was " << parser.dest());
+
+    command = "D=D+1";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.dest() == "010", "Should be '010' but was " << parser.dest());
+
+    command = "MD=D+1";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.dest() == "011", "Should be '011' but was " << parser.dest());
+
+    command = "A=10";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.dest() == "100", "Should be '100' but was " << parser.dest());
+
+    command = "AM=10";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.dest() == "101", "Should be '101' but was " << parser.dest());
+
+    command = "AD=10";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.dest() == "110", "Should be '110' but was " << parser.dest());
+
+    command = "AMD=D+1";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.dest() == "111", "Should be '111' but was " << parser.dest());
 }
 
 void symbol_table_init_test_case()
