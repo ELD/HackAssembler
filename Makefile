@@ -21,7 +21,7 @@ $(hackasm_BUILDDIR)/%.o: $(hackasm_SRCDIR)/%.$(hackasm_SRCEXT)
 	@echo " $(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<"; $(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<
 
 tester:
-	$(CXX) $(CXXFLAGS) $(INC) test/driver.cpp test/utility.cpp $(LIB) -o $(hackasm_TEST_TARGET) build/parser.o build/symbol_table.o build/comp_table.o $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(INC) test/driver.cpp test/utility.cpp $(LIB) -o $(hackasm_TEST_TARGET) build/parser.o build/symbol_table.o build/comp_table.o build/dest_table.o $(LDFLAGS)
 
 clean:
 	@echo " Cleaning...";
