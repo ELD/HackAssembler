@@ -22,6 +22,7 @@ void parser_command_type_test_case();
 void parser_token_test_case();
 void parser_dest_test_case();
 void parser_comp_test_case();
+void parser_jump_test_case();
 
 void symbol_table_init_test_case();
 void symbol_table_insert_test_case();
@@ -55,6 +56,7 @@ bool init_function()
     parser_suite->add(BOOST_TEST_CASE(&parser_token_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_dest_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_comp_test_case));
+    parser_suite->add(BOOST_TEST_CASE(&parser_jump_test_case));
 
     auto symbol_table_suite = BOOST_TEST_SUITE("Symbol_Table_Test_Suite");
     symbol_table_suite->add(BOOST_TEST_CASE(&symbol_table_init_test_case));
@@ -189,6 +191,43 @@ void parser_comp_test_case()
     command = "M=M+1";
     parser.setCurrentCommand(command);
     BOOST_CHECK_MESSAGE(parser.getCompBits() == "1110111", "should be '1110111' but was " << parser.getCompBits());
+}
+
+void parser_jump_test_case()
+{
+    hack::Parser parser;
+
+    std::string command = "D=D+1";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getJumpBits() == "000", "Should be '000' but was " << parser.getJumpBits());
+
+    command = "D;JGT";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getJumpBits() == "001", "Should be '001' but was " << parser.getJumpBits());
+
+    command = "D;JEQ";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getJumpBits() == "010", "Should be '010' but was " << parser.getJumpBits());
+
+    command = "D;JGE";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getJumpBits() == "011", "Should be '011' but was " << parser.getJumpBits());
+
+    command = "D;JLT";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getJumpBits() == "100", "Should be '100' but was " << parser.getJumpBits());
+
+    command = "D;JNE";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getJumpBits() == "101", "Should be '101' but was " << parser.getJumpBits());
+
+    command = "D;JLE";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getJumpBits() == "110", "Should be '110' but was " << parser.getJumpBits());
+
+    command = "D;JMP";
+    parser.setCurrentCommand(command);
+    BOOST_CHECK_MESSAGE(parser.getJumpBits() == "111", "Should be '111' but was " << parser.getJumpBits());
 }
 
 void symbol_table_init_test_case()
