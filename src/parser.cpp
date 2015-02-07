@@ -1,6 +1,7 @@
 #include "../headers/parser.hpp"
 #include "../headers/dest_table.hpp"
 #include "../headers/comp_table.hpp"
+#include "../headers/jump_table.hpp"
 
 namespace hack {
 
@@ -142,7 +143,19 @@ namespace hack {
 
     std::string Parser::getJumpBits()
     {
-        return "";
+        if (commandType() != C_COMMAND) {
+            return "";
+        }
+
+        auto semiColonPos = _currentCommand.find(";");
+
+        if (semiColonPos == std::string::npos) {
+            return JumpTable::lookup[""];
+        }
+
+        auto jump = _currentCommand.substr(semiColonPos + 1);
+
+        return JumpTable::lookup[jump];
     }
 
     void Parser::trimCommand(std::string& commandToTrim)
