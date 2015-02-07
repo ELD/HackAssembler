@@ -2,6 +2,7 @@
 hackasm_SRCDIR := src
 hackasm_BUILDDIR := build
 hackasm_TARGET := target/hackasm
+hackasm_TEST_TARGET := target/tester
 
 hackasm_SRCEXT := cpp
 hackasm_SOURCES := $(shell find $(hackasm_SRCDIR) -type f -name *.$(hackasm_SRCEXT))
@@ -20,10 +21,10 @@ $(hackasm_BUILDDIR)/%.o: $(hackasm_SRCDIR)/%.$(hackasm_SRCEXT)
 	@echo " $(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<"; $(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<
 
 test:
-	$(CXX) $(CXXFLAGS) $(INC) test/driver.cpp test/utility.cpp $(LIB) -o target/tester build/parser.o build/symbol_table.o $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(INC) test/driver.cpp test/utility.cpp $(LIB) -o $(hackasm_TEST_TARGET) build/parser.o build/symbol_table.o $(LDFLAGS)
 
 clean:
 	@echo " Cleaning...";
-	@echo " $(RM) -r $(hackasm_BUILDDIR) $(hackasm_TARGET)"; $(RM) -r $(hackasm_BUILDDIR) $(hackasm_TARGET)
+	@echo " $(RM) $(hackasm_BUILDDIR) $(hackasm_TARGET)"; $(RM) $(hackasm_TARGET) $(hackasm_TEST_TARGET)
 
 .PHONY: clean
