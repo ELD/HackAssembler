@@ -4,11 +4,7 @@
 // #define BOOST_TEST_MODULE HACK_ASM
 #include <boost/test/unit_test.hpp>
 #include <sstream>
-#include "../headers/parser.hpp"
-#include "../headers/symbol_table.hpp"
-#include "../headers/comp_table.hpp"
-#include "../headers/dest_table.hpp"
-#include "../headers/jump_table.hpp"
+#include "../headers/headers.hpp"
 #include "utility.hpp"
 // #include "parser_tests.hpp"
 // #include "symbol_table_tests.hpp"

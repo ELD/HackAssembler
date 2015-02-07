@@ -1,7 +1,4 @@
 #include "../headers/parser.hpp"
-#include "../headers/dest_table.hpp"
-#include "../headers/comp_table.hpp"
-#include "../headers/jump_table.hpp"
 
 namespace hack {
 
