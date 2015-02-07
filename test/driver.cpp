@@ -8,6 +8,7 @@
 #include "../headers/symbol_table.hpp"
 #include "../headers/comp_table.hpp"
 #include "../headers/dest_table.hpp"
+#include "../headers/jump_table.hpp"
 #include "utility.hpp"
 // #include "parser_tests.hpp"
 // #include "symbol_table_tests.hpp"
@@ -64,10 +65,15 @@ bool init_function()
     dest_table_test_suite->add(BOOST_TEST_CASE(&dest_table_init_test_case));
     dest_table_test_suite->add(BOOST_TEST_CASE(&dest_table_retrieve_test_case));
 
+    auto jump_table_test_suite = BOOST_TEST_SUITE("Jump_Table_Test_Suite");
+    jump_table_test_suite->add(BOOST_TEST_CASE(&jump_table_init_test_case));
+    jump_table_test_suite->add(BOOST_TEST_CASE(&jump_table_retrieve_test_case));
+
     framework::master_test_suite().add(parser_suite);
     framework::master_test_suite().add(symbol_table_test_suite);
     framework::master_test_suite().add(comp_table_test_suite);
     framework::master_test_suite().add(dest_table_test_suite);
+    framework::master_test_suite().add(jump_table_test_suite);
 
     return true;
 }
@@ -189,10 +195,10 @@ void dest_table_retrieve_test_case()
 
 void jump_table_init_test_case()
 {
-
+    BOOST_CHECK_MESSAGE(hack::JumpTable::lookup.size() == 8, "Should have size 8 but had size " << hack::JumpTable::lookup.size());
 }
 
 void jump_table_retrieve_test_case()
 {
-
+    BOOST_CHECK_MESSAGE(hack::JumpTable::lookup["JLE"] == "110", "Should be '110' but was " << hack::JumpTable::lookup["JLE"]);
 }
