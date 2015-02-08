@@ -25,6 +25,7 @@ namespace hack {
         int getPC() const;
     private:
         void trimCommand(std::string&);
+        bool isWhitespace(std::string&);
 
         // std::unique_ptr<std::ifstream> _file;
         std::istream& _file;

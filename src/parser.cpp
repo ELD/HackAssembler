@@ -18,20 +18,19 @@ namespace hack {
 
     bool Parser::hasMoreCommands()
     {
-        bool moreCommands;
+        bool moreCommands = false;
         std::string line;
-        auto previousPos = _file.tellg();
+        auto prevPos = _file.tellg();
+        do {
+            getline(_file, line);
+            if (!isWhitespace(line)) {
+                moreCommands = true;
+                break;
+            }
+        } while (!_file.eof());
 
-        _file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        getline(_file, line);
+        _file.seekg(prevPos);
 
-        if (line.substr(0,1) == "\n") {
-            moreCommands = false;
-        } else {
-            moreCommands = !_file.eof();
-        }
-
-        _file.seekg(previousPos);
         return moreCommands;
     }
 
@@ -142,15 +141,6 @@ namespace hack {
         return JumpTable::lookup[jump];
     }
 
-    void Parser::trimCommand(std::string& commandToTrim)
-    {
-        if (commandToTrim.size() > 0) {
-            auto firstPos = commandToTrim.find_first_not_of(' ');
-            auto lastPos = commandToTrim.find_last_not_of(' ');
-            commandToTrim = commandToTrim.substr(firstPos, (lastPos - firstPos + 1));
-        }
-    }
-
     void Parser::rewind()
     {
         _file.seekg(_fileHead);
@@ -165,5 +155,25 @@ namespace hack {
     int Parser::getPC() const
     {
         return _pc;
+    }
+
+    void Parser::trimCommand(std::string& commandToTrim)
+    {
+        if (commandToTrim.size() > 0) {
+            auto firstPos = commandToTrim.find_first_not_of(' ');
+            auto lastPos = commandToTrim.find_last_not_of(' ');
+            commandToTrim = commandToTrim.substr(firstPos, (lastPos - firstPos + 1));
+        }
+    }
+
+    bool Parser::isWhitespace(std::string& line)
+    {
+        for (char c : line) {
+            if (!std::isspace(c)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
