@@ -299,7 +299,8 @@ void parser_assemble_test_case()
         "0000000000000011",
         "1110000010010000",
         "0000000000000000",
-        "1110001100001000"
+        "1110001100001000",
+        ""
     };
 
     std::stringstream oss;
@@ -312,7 +313,7 @@ void parser_assemble_test_case()
         actualBinary.emplace_back(line);
     }
 
-    BOOST_CHECK_MESSAGE(actualBinary.size() == 6, "Should be '6' but was " << actualBinary.size());
+    BOOST_CHECK_MESSAGE(actualBinary.size() == expectedBinary.size(), "Should be '6' but was " << actualBinary.size());
     for (int i = 0; i < actualBinary.size(); ++i) {
         BOOST_CHECK_MESSAGE(expectedBinary[i] == actualBinary[i],
             "Should be '" << expectedBinary[i] << "' but was " << actualBinary[i]);

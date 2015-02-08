@@ -141,14 +141,42 @@ namespace hack {
         return JumpTable::lookup[jump];
     }
 
+    std::string Parser::translateACode(int value)
+    {
+        std::string encoded = std::bitset<8>(value).to_string();
+
+        for (int i = encoded.size(); i < 15; i++) {
+            encoded = "0" + encoded;
+        }
+
+        return encoded;
+    }
+
     void Parser::rewind()
     {
+        _file.clear();
         _file.seekg(_fileHead);
     }
 
     void Parser::translateAssembly(std::ostream& oss)
     {
-        
+        while (hasMoreCommands()) {
+            advance();
+            if (commandType() == L_COMMAND) {
+                // Nothing for now
+            } else if (commandType() == A_COMMAND) {
+                int value;
+                try {
+                    value = stoi(getSymbol());
+                } catch (std::invalid_argument exc) {
+                    // nothing for now
+                }
+
+                oss << "0" + translateACode(value) << std::endl;
+            } else {
+                oss << "111" + getCompBits() + getDestBits() + getJumpBits() << std::endl;
+            }
+        }
     }
 
     // Accessor methods for testing

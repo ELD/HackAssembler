@@ -18,6 +18,7 @@ namespace hack {
         std::string getDestBits();
         std::string getCompBits();
         std::string getJumpBits();
+        std::string translateACode(int);
         void rewind();
         void translateAssembly(std::ostream&);
 

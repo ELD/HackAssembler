@@ -2,6 +2,7 @@
 #define _HEADERS_H_
 
 #include <algorithm>
+#include <bitset>
 #include <iostream>
 #include <fstream>
 #include <string>
