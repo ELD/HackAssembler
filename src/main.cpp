@@ -8,6 +8,7 @@ int main(int argc, char* argv[])
     }
 
     std::string file(argv[1]);
+    std::ifstream fileHandle(file);
 
     // std::string noNumericValues("TEST");
     // try {
@@ -20,7 +21,8 @@ int main(int argc, char* argv[])
     std::string numericValues("10");
     std::cout << stoi(numericValues) << std::endl;
 
-    hack::Parser parser(file);
+    hack::Parser parser(fileHandle);
+    // hack::Parser parser(iss);
     while (parser.hasMoreCommands()) {
         parser.advance();
         std::string command = parser.getCurrentCommand();

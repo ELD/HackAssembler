@@ -36,6 +36,7 @@ clean:
 
 experimentals:
 	@echo "Building experimental code...";
+	@echo " $(CXX) $(CXXFLAGS) $(INC) $(hackasm_EXPERIMENTAL_SOURCES) $(LIB) -o $(hackasm_EXPERIMENTAL_TARGET) $(LDFLAGS)"
 	$(CXX) $(CXXFLAGS) $(INC) $(hackasm_EXPERIMENTAL_SOURCES) $(LIB) -o $(hackasm_EXPERIMENTAL_TARGET) $(LDFLAGS)
 
 .PHONY: clean

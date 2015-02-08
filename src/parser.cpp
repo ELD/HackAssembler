@@ -2,17 +2,17 @@
 
 namespace hack {
 
-    Parser::Parser()
-    {
-        _currentCommand = "";
-        lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
-        aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
-    }
+    // Parser::Parser()
+    // {
+    //     _currentCommand = "";
+    //     lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
+    //     aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
+    // }
 
-    Parser::Parser(const std::string fileName) : _file(std::unique_ptr<std::ifstream>(new std::ifstream(fileName)))
+    Parser::Parser(std::istream& file) : _file(file)
     {
         _currentCommand = "";
-        _fileHead = _file->tellg();
+        _fileHead = _file.tellg();
         lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
         aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
     }
@@ -25,7 +25,7 @@ namespace hack {
     std::string Parser::nextLine() const
     {
         std::string line;
-        std::getline(*_file, line);
+        std::getline(_file, line);
         return line;
     }
 
@@ -33,18 +33,18 @@ namespace hack {
     {
         bool moreCommands;
         std::string line;
-        auto previousPos = _file->tellg();
+        auto previousPos = _file.tellg();
 
-        _file->ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        getline(*_file, line);
+        _file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        getline(_file, line);
 
         if (line.substr(0,1) == "\n") {
             moreCommands = false;
         } else {
-            moreCommands = !_file->eof();
+            moreCommands = !_file.eof();
         }
 
-        _file->seekg(previousPos);
+        _file.seekg(previousPos);
         return moreCommands;
     }
 
@@ -53,9 +53,9 @@ namespace hack {
         if (hasMoreCommands()) {
             std::string tempCommand;
             do {
-                getline(*_file, tempCommand);
+                getline(_file, tempCommand);
                 trimCommand(tempCommand);
-            } while ((tempCommand == "" || tempCommand.substr(0,2) == "//") && !_file->eof());
+            } while ((tempCommand == "" || tempCommand.substr(0,2) == "//") && !_file.eof());
 
             _currentCommand = tempCommand;
         } else {
@@ -166,7 +166,7 @@ namespace hack {
 
     void Parser::rewind()
     {
-        _file->seekg(_fileHead);
+        _file.seekg(_fileHead);
     }
 
     // Accessor methods for testing

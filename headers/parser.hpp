@@ -8,8 +8,8 @@ namespace hack {
     class Parser
     {
     public:
-        Parser();
-        Parser (const std::string);
+        // Parser();
+        Parser (std::istream&);
         virtual ~Parser ();
         std::string nextLine() const;
         bool hasMoreCommands();
@@ -27,7 +27,8 @@ namespace hack {
     private:
         void trimCommand(std::string&);
 
-        std::unique_ptr<std::ifstream> _file;
+        // std::unique_ptr<std::ifstream> _file;
+        std::istream& _file;
         std::string _currentCommand;
 
         std::regex lCommand;
