@@ -1,14 +1,17 @@
 #CXX := clang++
 hackasm_SRCDIR := src
 hackasm_TEST_SRCDIR := test
+hackasm_EXPERIMENTAL_SRCDIR := experimentals
 hackasm_BUILDDIR := build
 hackasm_TARGET_DIR := target
 hackasm_TARGET := target/hackasm
 hackasm_TEST_TARGET := target/tester
+hackasm_EXPERIMENTAL_TARGET := target/experimentals
 
 hackasm_SRCEXT := cpp
 hackasm_SOURCES := $(shell find $(hackasm_SRCDIR) -type f -name *.$(hackasm_SRCEXT))
 hackasm_TEST_SOURCES := $(shell find $(hackasm_TEST_SRCDIR) -type f -name *.$(hackasm_SRCEXT))
+hackasm_EXPERIMENTAL_SOURCES := $(shell find $(hackasm_EXPERIMENTAL_SRCDIR) -type f -name *.$(hackasm_SRCEXT))
 hackasm_OBJECTS := $(patsubst $(hackasm_SRCDIR)/%,$(hackasm_BUILDDIR)/%,$(hackasm_SOURCES:.$(hackasm_SRCEXT)=.o))
 hackasm_TEST_OBJECTS := $(shell find $(hackasm_BUILDDIR) -type f -name *.o ! -name main.o)
 CXXFLAGS += -g -Wall -std=c++11 -stdlib=libc++ -O3 -flto
@@ -30,5 +33,9 @@ tester:
 clean:
 	@echo " Cleaning...";
 	@echo " $(RM) $(hackasm_BUILDDIR)/* $(hackasm_TARGET_DIR)/*"; $(RM) -r $(hackasm_BUILDDIR)/* $(hackasm_TARGET_DIR)/*
+
+experimentals:
+	@echo "Building experimental code...";
+	$(CXX) $(CXXFLAGS) $(INC) $(hackasm_EXPERIMENTAL_SOURCES) $(LIB) -o $(hackasm_EXPERIMENTAL_TARGET) $(LDFLAGS)
 
 .PHONY: clean
