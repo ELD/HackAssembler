@@ -8,32 +8,34 @@ namespace hack {
     class Parser
     {
     public:
-        Parser();
-        Parser (const std::string);
+        Parser (std::istream&);
         virtual ~Parser ();
-        std::string nextLine() const;
         bool hasMoreCommands();
         void advance();
         COMMAND_TYPE commandType() const;
         std::string getCurrentCommand() const;
-        std::string symbol();
-        std::string dest();
-        std::string comp();
-        std::string jump();
+        std::string getSymbol();
+        std::string getDestBits();
+        std::string getCompBits();
+        std::string getJumpBits();
         void rewind();
 
         // Accessor methods for testing
         void setCurrentCommand(std::string);
+        int getPC() const;
     private:
         void trimCommand(std::string&);
 
-        std::unique_ptr<std::ifstream> _file;
+        // std::unique_ptr<std::ifstream> _file;
+        std::istream& _file;
         std::string _currentCommand;
 
-        std::regex lCommand;
-        std::regex aCommand;
+        std::regex _lCommand;
+        std::regex _aCommand;
 
         size_t _fileHead;
+
+        int _pc;
     };
 }
 

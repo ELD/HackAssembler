@@ -2,19 +2,13 @@
 
 namespace hack {
 
-    Parser::Parser()
+    Parser::Parser(std::istream& file) : _file(file)
     {
+        _pc = -1;
         _currentCommand = "";
-        lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
-        aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
-    }
-
-    Parser::Parser(const std::string fileName) : _file(std::unique_ptr<std::ifstream>(new std::ifstream(fileName)))
-    {
-        _currentCommand = "";
-        _fileHead = _file->tellg();
-        lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
-        aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
+        _fileHead = _file.tellg();
+        _lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
+        _aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
     }
 
     Parser::~Parser()
@@ -22,29 +16,22 @@ namespace hack {
         // do nothing
     }
 
-    std::string Parser::nextLine() const
-    {
-        std::string line;
-        std::getline(*_file, line);
-        return line;
-    }
-
     bool Parser::hasMoreCommands()
     {
         bool moreCommands;
         std::string line;
-        auto previousPos = _file->tellg();
+        auto previousPos = _file.tellg();
 
-        _file->ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        getline(*_file, line);
+        _file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        getline(_file, line);
 
         if (line.substr(0,1) == "\n") {
             moreCommands = false;
         } else {
-            moreCommands = !_file->eof();
+            moreCommands = !_file.eof();
         }
 
-        _file->seekg(previousPos);
+        _file.seekg(previousPos);
         return moreCommands;
     }
 
@@ -53,11 +40,11 @@ namespace hack {
         if (hasMoreCommands()) {
             std::string tempCommand;
             do {
-                getline(*_file, tempCommand);
+                getline(_file, tempCommand);
                 trimCommand(tempCommand);
-            } while ((tempCommand == "" || tempCommand.substr(0,2) == "//") && !_file->eof());
-
+            } while ((tempCommand == "" || tempCommand.substr(0,2) == "//") && !_file.eof());
             _currentCommand = tempCommand;
+            _pc += 1;
         } else {
             _currentCommand = "--ERROR--";
         }
@@ -65,9 +52,9 @@ namespace hack {
 
     COMMAND_TYPE Parser::commandType() const
     {
-        if (std::regex_match(_currentCommand, lCommand)) {
+        if (std::regex_match(_currentCommand, _lCommand)) {
             return L_COMMAND;
-        } else if (std::regex_match(_currentCommand, aCommand)) {
+        } else if (std::regex_match(_currentCommand, _aCommand)) {
             return A_COMMAND;
         }
 
@@ -79,7 +66,7 @@ namespace hack {
         return _currentCommand;
     }
 
-    std::string Parser::symbol()
+    std::string Parser::getSymbol()
     {
         if (commandType() == A_COMMAND) {
             auto first = _currentCommand.find_first_not_of("@");
@@ -93,19 +80,66 @@ namespace hack {
         return "";
     }
 
-    std::string Parser::dest()
+    std::string Parser::getDestBits()
     {
+        if (commandType() != C_COMMAND) {
+            return "";
+        }
+
+        // Check for equal sign
+        auto index = _currentCommand.find("=");
+        // if no equal sign, return null entry
+        if (index == std::string::npos) {
+            return DestTable::lookup[""];
+        }
+        // get substr and find key from dest table
+        auto dest = _currentCommand.substr(0, index);
+
+        return DestTable::lookup[dest];
+    }
+
+    std::string Parser::getCompBits()
+    {
+        if (commandType() != C_COMMAND) {
+            return "";
+        }
+
+        auto equalPos = _currentCommand.find("=");
+        auto semiColonPos = _currentCommand.find(";");
+
+        if (equalPos == std::string::npos && semiColonPos == std::string::npos) {
+            return "";
+        }
+
+        std::string comp;
+        if (equalPos != std::string::npos) {
+            comp = _currentCommand.substr(equalPos + 1);
+            auto bitPair = CompTable::lookup[comp];
+            return bitPair.first + bitPair.second;
+        } else if (semiColonPos != std::string::npos) {
+            comp = _currentCommand.substr(0, semiColonPos);
+            auto bitPair = CompTable::lookup[comp];
+            return bitPair.first + bitPair.second;
+        }
+
         return "";
     }
 
-    std::string Parser::comp()
+    std::string Parser::getJumpBits()
     {
-        return "";
-    }
+        if (commandType() != C_COMMAND) {
+            return "";
+        }
 
-    std::string Parser::jump()
-    {
-        return "";
+        auto semiColonPos = _currentCommand.find(";");
+
+        if (semiColonPos == std::string::npos) {
+            return JumpTable::lookup[""];
+        }
+
+        auto jump = _currentCommand.substr(semiColonPos + 1);
+
+        return JumpTable::lookup[jump];
     }
 
     void Parser::trimCommand(std::string& commandToTrim)
@@ -119,12 +153,17 @@ namespace hack {
 
     void Parser::rewind()
     {
-        _file->seekg(_fileHead);
+        _file.seekg(_fileHead);
     }
 
     // Accessor methods for testing
     void Parser::setCurrentCommand(std::string command)
     {
         _currentCommand = std::move(command);
+    }
+
+    int Parser::getPC() const
+    {
+        return _pc;
     }
 }
