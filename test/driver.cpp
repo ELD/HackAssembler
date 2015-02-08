@@ -3,7 +3,6 @@
 #define BOOST_TEST_DYN_LINK
 // #define BOOST_TEST_MODULE HACK_ASM
 #include <boost/test/unit_test.hpp>
-#include <sstream>
 #include "../headers/headers.hpp"
 #include "headers/utility.hpp"
 // #include "parser_tests.hpp"
@@ -12,6 +11,7 @@
 using namespace boost::unit_test;
 
 bool init_function();
+void mockInputStream(std::stringstream&);
 
 void parser_init_test_case();
 void parser_command_type_test_case();
@@ -41,11 +41,6 @@ int main(int argc, char* argv[])
 
 bool init_function()
 {
-    if (framework::master_test_suite().argc < 2) {
-        std::cout << "No test file supplied.\nExample usage: ./tester [file]" << std::endl;
-        return false;
-    }
-
     std::string fileName = framework::master_test_suite().argv[1];
     auto parser_suite = BOOST_TEST_SUITE("Parser_Test_Suite");
     parser_suite->add(BOOST_TEST_CASE(&parser_init_test_case));
@@ -82,10 +77,19 @@ bool init_function()
     return true;
 }
 
+void mockInputStream(std::stringstream& in)
+{
+    in << "@R2" << std::endl;
+    in << "M=0" << std::endl;
+    in << std::endl << "@R0" << std::endl;
+    in << std::endl << "D=M" << std::endl;
+}
+
 void parser_init_test_case()
 {
-    auto fileName = framework::master_test_suite().argv[1];
-    hack::Parser parser(fileName);
+    std::stringstream mockStream;
+    mockInputStream(mockStream);
+    hack::Parser parser(mockStream);
     if (parser.hasMoreCommands()) {
         parser.advance();
         BOOST_CHECK_MESSAGE(parser.getCurrentCommand() == "@R2", "Should be '@R2' but was: " << parser.getCurrentCommand());
@@ -94,7 +98,9 @@ void parser_init_test_case()
 
 void parser_command_type_test_case()
 {
-    hack::Parser parser;
+    std::stringstream mockStream;
+    mockInputStream(mockStream);
+    hack::Parser parser(mockStream);
 
     std::string aCommand = "@R0";
     parser.setCurrentCommand(aCommand);
@@ -111,7 +117,9 @@ void parser_command_type_test_case()
 
 void parser_token_test_case()
 {
-    hack::Parser parser;
+    std::stringstream mockStream;
+    mockInputStream(mockStream);
+    hack::Parser parser(mockStream);
     std::string label = "(MY_LABEL)";
     parser.setCurrentCommand(label);
     BOOST_CHECK_MESSAGE(parser.getSymbol() == "MY_LABEL", "Should be MY_LABEL but was: " << parser.getSymbol());
@@ -127,7 +135,9 @@ void parser_token_test_case()
 
 void parser_dest_test_case()
 {
-    hack::Parser parser;
+    std::stringstream mockStream;
+    mockInputStream(mockStream);
+    hack::Parser parser(mockStream);
 
     std::string command = "D;JMP";
     parser.setCurrentCommand(command);
@@ -164,7 +174,9 @@ void parser_dest_test_case()
 
 void parser_comp_test_case()
 {
-    hack::Parser parser;
+    std::stringstream mockStream;
+    mockInputStream(mockStream);
+    hack::Parser parser(mockStream);
 
     std::string command = "0;JMP";
     parser.setCurrentCommand(command);
@@ -193,7 +205,9 @@ void parser_comp_test_case()
 
 void parser_jump_test_case()
 {
-    hack::Parser parser;
+    std::stringstream mockStream;
+    mockInputStream(mockStream);
+    hack::Parser parser(mockStream);
 
     std::string command = "D=D+1";
     parser.setCurrentCommand(command);
@@ -230,7 +244,9 @@ void parser_jump_test_case()
 
 void parser_all_bits_test_case()
 {
-    hack::Parser parser;
+    std::stringstream mockStream;
+    mockInputStream(mockStream);
+    hack::Parser parser(mockStream);
     std::string command;
     std::string allBits;
 
