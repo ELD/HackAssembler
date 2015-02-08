@@ -2,31 +2,18 @@
 
 namespace hack {
 
-    // Parser::Parser()
-    // {
-    //     _currentCommand = "";
-    //     lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
-    //     aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
-    // }
-
     Parser::Parser(std::istream& file) : _file(file)
     {
+        _pc = -1;
         _currentCommand = "";
         _fileHead = _file.tellg();
-        lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
-        aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
+        _lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
+        _aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
     }
 
     Parser::~Parser()
     {
         // do nothing
-    }
-
-    std::string Parser::nextLine() const
-    {
-        std::string line;
-        std::getline(_file, line);
-        return line;
     }
 
     bool Parser::hasMoreCommands()
@@ -56,8 +43,8 @@ namespace hack {
                 getline(_file, tempCommand);
                 trimCommand(tempCommand);
             } while ((tempCommand == "" || tempCommand.substr(0,2) == "//") && !_file.eof());
-
             _currentCommand = tempCommand;
+            _pc += 1;
         } else {
             _currentCommand = "--ERROR--";
         }
@@ -65,9 +52,9 @@ namespace hack {
 
     COMMAND_TYPE Parser::commandType() const
     {
-        if (std::regex_match(_currentCommand, lCommand)) {
+        if (std::regex_match(_currentCommand, _lCommand)) {
             return L_COMMAND;
-        } else if (std::regex_match(_currentCommand, aCommand)) {
+        } else if (std::regex_match(_currentCommand, _aCommand)) {
             return A_COMMAND;
         }
 
@@ -173,5 +160,10 @@ namespace hack {
     void Parser::setCurrentCommand(std::string command)
     {
         _currentCommand = std::move(command);
+    }
+
+    int Parser::getPC() const
+    {
+        return _pc;
     }
 }

@@ -20,6 +20,7 @@ void parser_dest_test_case();
 void parser_comp_test_case();
 void parser_jump_test_case();
 void parser_all_bits_test_case();
+void parser_pc_test_case();
 
 void symbol_table_init_test_case();
 void symbol_table_insert_test_case();
@@ -50,6 +51,7 @@ bool init_function()
     parser_suite->add(BOOST_TEST_CASE(&parser_comp_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_jump_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_all_bits_test_case));
+    parser_suite->add(BOOST_TEST_CASE(&parser_pc_test_case));
 
     auto symbol_table_suite = BOOST_TEST_SUITE("Symbol_Table_Test_Suite");
     symbol_table_suite->add(BOOST_TEST_CASE(&symbol_table_init_test_case));
@@ -259,6 +261,18 @@ void parser_all_bits_test_case()
     parser.setCurrentCommand(command);
     allBits = parser.getCompBits() + parser.getDestBits() + parser.getJumpBits();
     BOOST_CHECK_MESSAGE(allBits == "0001100000011", "Should be '0001100000011' but was " << allBits);
+}
+
+void parser_pc_test_case()
+{
+    std::stringstream mockStream;
+    mockInputStream(mockStream);
+    hack::Parser parser(mockStream);
+
+    for (int pc = 0; parser.hasMoreCommands(); pc++) {
+        parser.advance();
+        BOOST_CHECK_MESSAGE(parser.getPC() == pc, "Should be 0 but was " << parser.getPC());
+    }
 }
 
 void symbol_table_init_test_case()
