@@ -5,7 +5,7 @@
 #include <boost/test/unit_test.hpp>
 #include <sstream>
 #include "../headers/headers.hpp"
-#include "utility.hpp"
+#include "headers/utility.hpp"
 // #include "parser_tests.hpp"
 // #include "symbol_table_tests.hpp"
 
