@@ -3,6 +3,7 @@
 #define BOOST_TEST_DYN_LINK
 // #define BOOST_TEST_MODULE HACK_ASM
 #include <boost/test/unit_test.hpp>
+#include <vector>
 #include "../headers/headers.hpp"
 #include "headers/utility.hpp"
 // #include "parser_tests.hpp"
@@ -21,6 +22,7 @@ void parser_comp_test_case();
 void parser_jump_test_case();
 void parser_all_bits_test_case();
 void parser_pc_test_case();
+void parser_assemble_test_case();
 
 void symbol_table_init_test_case();
 void symbol_table_insert_test_case();
@@ -52,6 +54,7 @@ bool init_function()
     parser_suite->add(BOOST_TEST_CASE(&parser_jump_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_all_bits_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_pc_test_case));
+    parser_suite->add(BOOST_TEST_CASE(&parser_assemble_test_case));
 
     auto symbol_table_suite = BOOST_TEST_SUITE("Symbol_Table_Test_Suite");
     symbol_table_suite->add(BOOST_TEST_CASE(&symbol_table_init_test_case));
@@ -85,6 +88,16 @@ void mockInputStream(std::stringstream& in)
     in << "M=0" << std::endl;
     in << std::endl << "@R0" << std::endl;
     in << std::endl << "D=M" << std::endl;
+}
+
+void mockInputStreamNoSymbols(std::stringstream& in)
+{
+    in << "@2" << std::endl;
+    in << "D=A" << std::endl;
+    in << "@3" << std::endl;
+    in << "D=D+A" << std::endl;
+    in << "@0" << std::endl;
+    in << "M=D" << std::endl << std::endl;
 }
 
 void parser_init_test_case()
@@ -272,6 +285,37 @@ void parser_pc_test_case()
     for (int pc = 0; parser.hasMoreCommands(); pc++) {
         parser.advance();
         BOOST_CHECK_MESSAGE(parser.getPC() == pc, "Should be 0 but was " << parser.getPC());
+    }
+}
+
+void parser_assemble_test_case()
+{
+    std::stringstream mockStream;
+    mockInputStreamNoSymbols(mockStream);
+    hack::Parser parser(mockStream);
+    std::vector<std::string> expectedBinary {
+        "0000000000000010",
+        "1110110000010000",
+        "0000000000000011",
+        "1110000010010000",
+        "0000000000000000",
+        "1110001100001000"
+    };
+
+    std::stringstream oss;
+    parser.translateAssembly(oss);
+
+    std::string line;
+    std::vector<std::string> actualBinary;
+    while (!oss.eof()) {
+        getline(oss, line);
+        actualBinary.emplace_back(line);
+    }
+
+    BOOST_CHECK_MESSAGE(actualBinary.size() == 6, "Should be '6' but was " << actualBinary.size());
+    for (int i = 0; i < actualBinary.size(); ++i) {
+        BOOST_CHECK_MESSAGE(expectedBinary[i] == actualBinary[i],
+            "Should be '" << expectedBinary[i] << "' but was " << actualBinary[i]);
     }
 }
 

@@ -146,6 +146,11 @@ namespace hack {
         _file.seekg(_fileHead);
     }
 
+    void Parser::translateAssembly(std::ostream& oss)
+    {
+        
+    }
+
     // Accessor methods for testing
     void Parser::setCurrentCommand(std::string command)
     {

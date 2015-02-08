@@ -19,6 +19,7 @@ namespace hack {
         std::string getCompBits();
         std::string getJumpBits();
         void rewind();
+        void translateAssembly(std::ostream&);
 
         // Accessor methods for testing
         void setCurrentCommand(std::string);
