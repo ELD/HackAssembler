@@ -18,20 +18,19 @@ namespace hack {
 
     bool Parser::hasMoreCommands()
     {
-        bool moreCommands;
+        bool moreCommands = false;
         std::string line;
-        auto previousPos = _file.tellg();
+        auto prevPos = _file.tellg();
+        do {
+            getline(_file, line);
+            if (!isWhitespace(line)) {
+                moreCommands = true;
+                break;
+            }
+        } while (!_file.eof());
 
-        _file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        getline(_file, line);
+        _file.seekg(prevPos);
 
-        if (line.substr(0,1) == "\n") {
-            moreCommands = false;
-        } else {
-            moreCommands = !_file.eof();
-        }
-
-        _file.seekg(previousPos);
         return moreCommands;
     }
 
@@ -142,18 +141,42 @@ namespace hack {
         return JumpTable::lookup[jump];
     }
 
-    void Parser::trimCommand(std::string& commandToTrim)
+    std::string Parser::translateACode(int value)
     {
-        if (commandToTrim.size() > 0) {
-            auto firstPos = commandToTrim.find_first_not_of(' ');
-            auto lastPos = commandToTrim.find_last_not_of(' ');
-            commandToTrim = commandToTrim.substr(firstPos, (lastPos - firstPos + 1));
+        std::string encoded = std::bitset<8>(value).to_string();
+
+        for (int i = encoded.size(); i < 15; i++) {
+            encoded = "0" + encoded;
         }
+
+        return encoded;
     }
 
     void Parser::rewind()
     {
+        _file.clear();
         _file.seekg(_fileHead);
+    }
+
+    void Parser::translateAssembly(std::ostream& oss)
+    {
+        while (hasMoreCommands()) {
+            advance();
+            if (commandType() == L_COMMAND) {
+                // Nothing for now
+            } else if (commandType() == A_COMMAND) {
+                int value;
+                try {
+                    value = stoi(getSymbol());
+                } catch (std::invalid_argument exc) {
+                    // nothing for now
+                }
+
+                oss << "0" + translateACode(value) << std::endl;
+            } else {
+                oss << "111" + getCompBits() + getDestBits() + getJumpBits() << std::endl;
+            }
+        }
     }
 
     // Accessor methods for testing
@@ -165,5 +188,25 @@ namespace hack {
     int Parser::getPC() const
     {
         return _pc;
+    }
+
+    void Parser::trimCommand(std::string& commandToTrim)
+    {
+        if (commandToTrim.size() > 0) {
+            auto firstPos = commandToTrim.find_first_not_of(' ');
+            auto lastPos = commandToTrim.find_last_not_of(' ');
+            commandToTrim = commandToTrim.substr(firstPos, (lastPos - firstPos + 1));
+        }
+    }
+
+    bool Parser::isWhitespace(std::string& line)
+    {
+        for (char c : line) {
+            if (!std::isspace(c)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

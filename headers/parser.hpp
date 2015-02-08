@@ -18,13 +18,16 @@ namespace hack {
         std::string getDestBits();
         std::string getCompBits();
         std::string getJumpBits();
+        std::string translateACode(int);
         void rewind();
+        void translateAssembly(std::ostream&);
 
         // Accessor methods for testing
         void setCurrentCommand(std::string);
         int getPC() const;
     private:
         void trimCommand(std::string&);
+        bool isWhitespace(std::string&);
 
         // std::unique_ptr<std::ifstream> _file;
         std::istream& _file;
