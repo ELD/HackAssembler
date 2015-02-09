@@ -38,13 +38,15 @@ namespace hack {
     void Parser::advance()
     {
         if (hasMoreCommands()) {
+            if (commandType() != L_COMMAND) {
+                _pc += 1;
+            }
             std::string tempCommand;
             do {
                 getline(_file, tempCommand);
                 trimCommand(tempCommand);
             } while ((isWhitespace(tempCommand) || tempCommand.substr(0,2) == "//") && hasMoreCommands());
             _currentCommand = tempCommand;
-            _pc += 1;
         } else {
             _currentCommand = "--ERROR--";
         }
@@ -184,24 +186,28 @@ namespace hack {
             }
         }
 
+        // rewind again
+        rewind();
+
     }
 
     void Parser::translateAssembly(std::ostream& oss)
     {
+        collectSymbols();
         while (hasMoreCommands()) {
             advance();
-            if (commandType() == L_COMMAND) {
-                // Nothing for now
-            } else if (commandType() == A_COMMAND) {
+            if (commandType() == A_COMMAND) {
                 int value;
+
                 try {
                     value = stoi(getSymbol());
                 } catch (std::invalid_argument exc) {
-                    std::cout << "Error on symbol: " << getSymbol() << std::endl;
+                    // std::cout << "Error on symbol: " << getSymbol() << std::endl;
+                    value = _symbols.retrieveSymbol(getSymbol());
                 }
 
                 oss << "0" + translateACode(value) << std::endl;
-            } else {
+            } else if (commandType() == C_COMMAND) {
                 oss << "111" + getCompBits() + getDestBits() + getJumpBits() << std::endl;
             }
         }

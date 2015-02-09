@@ -105,7 +105,7 @@ void mockInputStreamNoSymbols(std::stringstream& in)
 
 void mockInputStreamWithSymbols(std::stringstream& in)
 {
-    in << "R0" << std::endl;
+    in << "@R0" << std::endl;
     in << "D=M" << std::endl;
     in << "@R1" << std::endl;
     in << "D=D-M" << std::endl;
@@ -327,10 +327,10 @@ void parser_collect_symbols_test_case()
     BOOST_CHECK_MESSAGE(table.contains("OUTPUT_FIRST") && table.retrieveSymbol("OUTPUT_FIRST") == 10,
         "Should be '10' but was " << table.retrieveSymbol("OUTPUT_FIRST"));
 
-    BOOST_CHECK_MESSAGE(table.contains("OUTPUT_D") && table.retrieveSymbol("OUTPUT_D") == 13,
+    BOOST_CHECK_MESSAGE(table.contains("OUTPUT_D") && table.retrieveSymbol("OUTPUT_D") == 12,
         "Should be '13' but was " << table.retrieveSymbol("OUTPUT_D"));
 
-    BOOST_CHECK_MESSAGE(table.contains("INFINITE_LOOP") && table.retrieveSymbol("INFINITE_LOOP") == 16,
+    BOOST_CHECK_MESSAGE(table.contains("INFINITE_LOOP") && table.retrieveSymbol("INFINITE_LOOP") == 14,
         "Should be '16' but was " << table.retrieveSymbol("INFINITE_LOOP"));
 }
 
