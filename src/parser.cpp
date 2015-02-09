@@ -143,11 +143,7 @@ namespace hack {
 
     std::string Parser::translateACode(int value)
     {
-        std::string encoded = std::bitset<8>(value).to_string();
-
-        for (int i = encoded.size(); i < 15; i++) {
-            encoded = "0" + encoded;
-        }
+        std::string encoded = std::bitset<15>(value).to_string();
 
         return encoded;
     }
@@ -169,7 +165,7 @@ namespace hack {
                 try {
                     value = stoi(getSymbol());
                 } catch (std::invalid_argument exc) {
-                    // nothing for now
+                    std::cout << "Error on symbol: " << getSymbol() << std::endl;
                 }
 
                 oss << "0" + translateACode(value) << std::endl;

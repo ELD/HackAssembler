@@ -12,13 +12,13 @@ int main(int argc, char* argv[])
 
     hack::Parser parser(fileHandle);
 
-    while (parser.hasMoreCommands()) {
-        parser.advance();
-        std::cout << "Command Type: " << parser.commandType() << std::endl;
-        std::cout << "Command: " << parser.getCurrentCommand() << std::endl;
-    }
-
-    parser.rewind();
+    // while (parser.hasMoreCommands()) {
+    //     parser.advance();
+    //     std::cout << "Command Type: " << parser.commandType() << std::endl;
+    //     std::cout << "Command: " << parser.getCurrentCommand() << std::endl;
+    // }
+    //
+    // parser.rewind();
 
     std::string outFileName = file.substr(0, file.find_first_of('.'));
     std::ofstream oss(outFileName + ".hack");
