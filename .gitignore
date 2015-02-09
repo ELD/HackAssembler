@@ -1,5 +1,6 @@
 target/*
 build/*
+res/*.hack
 
 !target/.gitkeep
 !build/.gitkeep
