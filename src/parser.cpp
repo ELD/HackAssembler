@@ -8,7 +8,7 @@ namespace hack {
         _currentCommand = "";
         _fileHead = _file.tellg();
         _lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
-        _aCommand.assign("\\@([\\w*|\\d*]*)", std::regex_constants::icase);
+        _aCommand.assign("\\@([\\w*|\\d*]*).*", std::regex_constants::icase);
     }
 
     Parser::~Parser()
@@ -41,7 +41,7 @@ namespace hack {
             do {
                 getline(_file, tempCommand);
                 trimCommand(tempCommand);
-            } while ((tempCommand == "" || tempCommand.substr(0,2) == "//") && !_file.eof());
+            } while ((isWhitespace(tempCommand) || tempCommand.substr(0,2) == "//") && hasMoreCommands());
             _currentCommand = tempCommand;
             _pc += 1;
         } else {
@@ -196,6 +196,8 @@ namespace hack {
             auto firstPos = commandToTrim.find_first_not_of(' ');
             auto lastPos = commandToTrim.find_last_not_of(' ');
             commandToTrim = commandToTrim.substr(firstPos, (lastPos - firstPos + 1));
+
+            commandToTrim.erase(std::remove(commandToTrim.begin(), commandToTrim.end(), '\r'), commandToTrim.end());
         }
     }
 
