@@ -5,6 +5,7 @@ namespace hack {
     Parser::Parser(std::istream& file) : _file(file)
     {
         _pc = -1;
+        _mem = 16;
         _currentCommand = "";
         _fileHead = _file.tellg();
         _lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
@@ -156,7 +157,25 @@ namespace hack {
 
     void Parser::collectSymbols()
     {
-
+        while (hasMoreCommands()) {
+            advance();
+            if (commandType() == L_COMMAND || commandType() == A_COMMAND) {
+                int value;
+                try {
+                    value = stoi(getSymbol());
+                } catch (std::invalid_argument exc) {
+                    std::string symbol = getSymbol();
+                    if (!_symbols.contains(symbol)) {
+                        if (commandType() == L_COMMAND) {
+                            _symbols.addSymbol(symbol, _pc);
+                        } else {
+                            _symbols.addSymbol(symbol, _mem);
+                            ++_mem;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     void Parser::translateAssembly(std::ostream& oss)

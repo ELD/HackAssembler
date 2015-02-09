@@ -41,6 +41,7 @@ namespace hack {
         size_t _fileHead;
 
         int _pc;
+        int _mem;
 
         SymbolTable _symbols;
     };
