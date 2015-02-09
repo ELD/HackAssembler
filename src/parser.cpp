@@ -157,25 +157,33 @@ namespace hack {
 
     void Parser::collectSymbols()
     {
+        // First pass, L_COMMANDs
         while (hasMoreCommands()) {
             advance();
-            if (commandType() == L_COMMAND || commandType() == A_COMMAND) {
-                int value;
-                try {
-                    value = stoi(getSymbol());
-                } catch (std::invalid_argument exc) {
-                    std::string symbol = getSymbol();
-                    if (!_symbols.contains(symbol)) {
-                        if (commandType() == L_COMMAND) {
-                            _symbols.addSymbol(symbol, _pc);
-                        } else {
-                            _symbols.addSymbol(symbol, _mem);
-                            ++_mem;
-                        }
-                    }
+            if (commandType() == L_COMMAND) {
+                if (_symbols.contains(getSymbol())) {
+                    continue;
                 }
+
+                _symbols.addSymbol(getSymbol(), _pc);
             }
         }
+
+        rewind();
+
+        // Second pass, A_COMMANDs
+        while (hasMoreCommands()) {
+            advance();
+            if (commandType() == A_COMMAND) {
+                if (_symbols.contains(getSymbol())) {
+                    continue;
+                }
+
+                _symbols.addSymbol(getSymbol(), _mem);
+                ++_mem;
+            }
+        }
+
     }
 
     void Parser::translateAssembly(std::ostream& oss)

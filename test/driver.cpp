@@ -24,6 +24,7 @@ void parser_all_bits_test_case();
 void parser_pc_test_case();
 void parser_collect_symbols_test_case();
 void parser_assemble_test_case();
+void parser_assemble_with_symbols_test_case();
 
 void symbol_table_init_test_case();
 void symbol_table_insert_test_case();
@@ -103,18 +104,24 @@ void mockInputStreamNoSymbols(std::stringstream& in)
 
 void mockInputStreamWithSymbols(std::stringstream& in)
 {
+    in << "R0" << std::endl;
+    in << "D=M" << std::endl;
+    in << "@R1" << std::endl;
+    in << "D=D-M" << std::endl;
+    in << "@OUTPUT_FIRST" << std::endl;
+    in << "D;JGT" << std::endl;
+    in << "@R1" << std::endl;
+    in << "D=M" << std::endl;
+    in << "@OUTPUT_D" << std::endl;
+    in << "0;JMP" << std::endl;
+    in << "(OUTPUT_FIRST)" << std::endl;
     in << "@R0" << std::endl;
-    in << "D=A" << std::endl;
-    in << "@15" << std::endl;
-    in << "D=D+A" << std::endl;
-    in << "@variable" << std::endl;
-    in << "D=A" << std::endl;
-    in << "1612" << std::endl;
-    in << "D=D+A" << std::endl;
-    in << "@i" << std::endl;
+    in << "D=M" << std::endl;
+    in << "(OUTPUT_D)" << std::endl;
+    in << "@R2" << std::endl;
     in << "M=D" << std::endl;
-    in << "(END)" << std::endl;
-    in << "@END" << std::endl;
+    in << "(INFINITE_LOOP)" << std::endl;
+    in << "@INFINITE_LOOP" << std::endl;
     in << "0;JMP" << std::endl << std::endl;
 }
 
@@ -316,14 +323,14 @@ void parser_collect_symbols_test_case()
     auto table = parser.getSymbolTable();
 
     BOOST_CHECK_MESSAGE(table.size() == 26, "Should be '26' but was " << table.size());
-    BOOST_CHECK_MESSAGE(table.contains("variable") && table.retrieveSymbol("variable") == 16,
-        "Should be '16' but was " << table.retrieveSymbol("variable"));
+    BOOST_CHECK_MESSAGE(table.contains("OUTPUT_FIRST") && table.retrieveSymbol("OUTPUT_FIRST") == 10,
+        "Should be '10' but was " << table.retrieveSymbol("OUTPUT_FIRST"));
 
-    BOOST_CHECK_MESSAGE(table.contains("i") && table.retrieveSymbol("i") == 17,
-        "Should be '17' but was " << table.retrieveSymbol("i"));
-        
-    BOOST_CHECK_MESSAGE(table.contains("END") && table.retrieveSymbol("END") == 10,
-        "Should be '10' but was " << table.retrieveSymbol("END"));
+    BOOST_CHECK_MESSAGE(table.contains("OUTPUT_D") && table.retrieveSymbol("OUTPUT_D") == 13,
+        "Should be '13' but was " << table.retrieveSymbol("OUTPUT_D"));
+
+    BOOST_CHECK_MESSAGE(table.contains("INFINITE_LOOP") && table.retrieveSymbol("INFINITE_LOOP") == 16,
+        "Should be '16' but was " << table.retrieveSymbol("INFINITE_LOOP"));
 }
 
 void parser_assemble_test_case()
@@ -356,6 +363,16 @@ void parser_assemble_test_case()
         BOOST_CHECK_MESSAGE(expectedBinary[i] == actualBinary[i],
             "Should be '" << expectedBinary[i] << "' but was " << actualBinary[i]);
     }
+}
+
+void parser_assemble_with_symbols_test_case()
+{
+    std::stringstream mockStream;
+    mockInputStreamWithSymbols(mockStream);
+    hack::Parser parser(mockStream);
+    std::vector<std::string> expectedBinary {
+
+    };
 }
 
 void symbol_table_init_test_case()
