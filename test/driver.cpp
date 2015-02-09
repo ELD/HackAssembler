@@ -57,6 +57,7 @@ bool init_function()
     parser_suite->add(BOOST_TEST_CASE(&parser_pc_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_collect_symbols_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_assemble_test_case));
+    parser_suite->add(BOOST_TEST_CASE(&parser_assemble_with_symbols_test_case));
 
     auto symbol_table_suite = BOOST_TEST_SUITE("Symbol_Table_Test_Suite");
     symbol_table_suite->add(BOOST_TEST_CASE(&symbol_table_init_test_case));
@@ -361,7 +362,7 @@ void parser_assemble_test_case()
     BOOST_CHECK_MESSAGE(actualBinary.size() == expectedBinary.size(), "Should be '6' but was " << actualBinary.size());
     for (int i = 0; i < actualBinary.size(); ++i) {
         BOOST_CHECK_MESSAGE(expectedBinary[i] == actualBinary[i],
-            "Should be '" << expectedBinary[i] << "' but was " << actualBinary[i]);
+            "Should be '" << expectedBinary[i] << "' but was '" << actualBinary[i] << "'");
     }
 }
 
@@ -371,8 +372,40 @@ void parser_assemble_with_symbols_test_case()
     mockInputStreamWithSymbols(mockStream);
     hack::Parser parser(mockStream);
     std::vector<std::string> expectedBinary {
-
+        "0000000000000000",
+        "1111110000010000",
+        "0000000000000001",
+        "1111010011010000",
+        "0000000000001010",
+        "1110001100000001",
+        "0000000000000001",
+        "1111110000010000",
+        "0000000000001100",
+        "1110101010000111",
+        "0000000000000000",
+        "1111110000010000",
+        "0000000000000010",
+        "1110001100001000",
+        "0000000000001110",
+        "1110101010000111",
+        ""
     };
+
+    std::stringstream oss;
+    parser.translateAssembly(oss);
+
+    std::string line;
+    std::vector<std::string> actualBinary;
+    while (!oss.eof()) {
+        getline(oss, line);
+        actualBinary.emplace_back(line);
+    }
+
+    BOOST_CHECK_MESSAGE(actualBinary.size() == expectedBinary.size(), "Should be '17' but was " << actualBinary.size());
+    for (int i = 0; i < actualBinary.size(); ++i) {
+        BOOST_CHECK_MESSAGE(expectedBinary[i] == actualBinary[i],
+            "Should be '" << expectedBinary[i] << "' but was '" << actualBinary[i] << "'");
+    }
 }
 
 void symbol_table_init_test_case()
