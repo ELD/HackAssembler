@@ -5,6 +5,7 @@ namespace hack {
     Parser::Parser(std::istream& file) : _file(file)
     {
         _pc = -1;
+        _mem = 16;
         _currentCommand = "";
         _fileHead = _file.tellg();
         _lCommand.assign("\\((.*)\\)", std::regex_constants::icase);
@@ -37,13 +38,17 @@ namespace hack {
     void Parser::advance()
     {
         if (hasMoreCommands()) {
+            if (commandType() != L_COMMAND) {
+                _pc += 1;
+            }
             std::string tempCommand;
             do {
                 getline(_file, tempCommand);
                 trimCommand(tempCommand);
             } while ((isWhitespace(tempCommand) || tempCommand.substr(0,2) == "//") && hasMoreCommands());
+            trimComments(tempCommand);
+            trimCommand(tempCommand);
             _currentCommand = tempCommand;
-            _pc += 1;
         } else {
             _currentCommand = "--ERROR--";
         }
@@ -154,22 +159,61 @@ namespace hack {
         _file.seekg(_fileHead);
     }
 
-    void Parser::translateAssembly(std::ostream& oss)
+    void Parser::collectSymbols()
     {
+        // First pass, L_COMMANDs
         while (hasMoreCommands()) {
             advance();
             if (commandType() == L_COMMAND) {
-                // Nothing for now
-            } else if (commandType() == A_COMMAND) {
+                if (_symbols.contains(getSymbol())) {
+                    continue;
+                }
+
+                _symbols.addSymbol(getSymbol(), _pc);
+            }
+        }
+
+        rewind();
+
+        // Second pass, A_COMMANDs
+        while (hasMoreCommands()) {
+            advance();
+            if (commandType() == A_COMMAND) {
+                try {
+                    std::stoi(getSymbol());
+                    continue;
+                } catch (std::invalid_argument exc) {
+                    if (_symbols.contains(getSymbol())) {
+                        continue;
+                    }
+
+                    _symbols.addSymbol(getSymbol(), _mem);
+                    _mem += 1;
+                }
+            }
+        }
+
+        // rewind again
+        rewind();
+
+    }
+
+    void Parser::translateAssembly(std::ostream& oss)
+    {
+        collectSymbols();
+        while (hasMoreCommands()) {
+            advance();
+            if (commandType() == A_COMMAND) {
                 int value;
+
                 try {
                     value = stoi(getSymbol());
                 } catch (std::invalid_argument exc) {
-                    std::cout << "Error on symbol: " << getSymbol() << std::endl;
+                    value = _symbols.retrieveSymbol(getSymbol());
                 }
 
                 oss << "0" + translateACode(value) << std::endl;
-            } else {
+            } else if (commandType() == C_COMMAND) {
                 oss << "111" + getCompBits() + getDestBits() + getJumpBits() << std::endl;
             }
         }
@@ -186,6 +230,11 @@ namespace hack {
         return _pc;
     }
 
+    SymbolTable Parser::getSymbolTable() const
+    {
+        return _symbols;
+    }
+
     void Parser::trimCommand(std::string& commandToTrim)
     {
         if (commandToTrim.size() > 0) {
@@ -194,6 +243,14 @@ namespace hack {
             commandToTrim = commandToTrim.substr(firstPos, (lastPos - firstPos + 1));
 
             commandToTrim.erase(std::remove(commandToTrim.begin(), commandToTrim.end(), '\r'), commandToTrim.end());
+        }
+    }
+
+    void Parser::trimComments(std::string& commandToTrim)
+    {
+        auto commentPos = commandToTrim.find_first_of("//");
+        if (commentPos != std::string::npos) {
+            commandToTrim = commandToTrim.substr(0, commentPos);
         }
     }
 

@@ -12,9 +12,10 @@ namespace hack {
 		void addSymbol(const std::string&, int);
 		bool contains(const std::string&) const;
 		int retrieveSymbol(const std::string&) const;
+		int size() const;
 
 	private:
-		std::unique_ptr<std::map<std::string, int>> _symbolTable;
+		std::shared_ptr<std::map<std::string, int>> _symbolTable;
 	};
 }
 

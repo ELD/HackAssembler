@@ -22,7 +22,9 @@ void parser_comp_test_case();
 void parser_jump_test_case();
 void parser_all_bits_test_case();
 void parser_pc_test_case();
+void parser_collect_symbols_test_case();
 void parser_assemble_test_case();
+void parser_assemble_with_symbols_test_case();
 
 void symbol_table_init_test_case();
 void symbol_table_insert_test_case();
@@ -44,7 +46,6 @@ int main(int argc, char* argv[])
 
 bool init_function()
 {
-    std::string fileName = framework::master_test_suite().argv[1];
     auto parser_suite = BOOST_TEST_SUITE("Parser_Test_Suite");
     parser_suite->add(BOOST_TEST_CASE(&parser_init_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_command_type_test_case));
@@ -54,7 +55,9 @@ bool init_function()
     parser_suite->add(BOOST_TEST_CASE(&parser_jump_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_all_bits_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_pc_test_case));
+    parser_suite->add(BOOST_TEST_CASE(&parser_collect_symbols_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_assemble_test_case));
+    parser_suite->add(BOOST_TEST_CASE(&parser_assemble_with_symbols_test_case));
 
     auto symbol_table_suite = BOOST_TEST_SUITE("Symbol_Table_Test_Suite");
     symbol_table_suite->add(BOOST_TEST_CASE(&symbol_table_init_test_case));
@@ -98,6 +101,29 @@ void mockInputStreamNoSymbols(std::stringstream& in)
     in << "D=D+A" << std::endl;
     in << "@0" << std::endl;
     in << "M=D" << std::endl << std::endl;
+}
+
+void mockInputStreamWithSymbols(std::stringstream& in)
+{
+    in << "@R0" << std::endl;
+    in << "D=M" << std::endl;
+    in << "@R1" << std::endl;
+    in << "D=D-M" << std::endl;
+    in << "@OUTPUT_FIRST" << std::endl;
+    in << "D;JGT" << std::endl;
+    in << "@R1" << std::endl;
+    in << "D=M" << std::endl;
+    in << "@OUTPUT_D" << std::endl;
+    in << "0;JMP" << std::endl;
+    in << "(OUTPUT_FIRST)" << std::endl;
+    in << "@R0" << std::endl;
+    in << "D=M" << std::endl;
+    in << "(OUTPUT_D)" << std::endl;
+    in << "@R2" << std::endl;
+    in << "M=D" << std::endl;
+    in << "(INFINITE_LOOP)" << std::endl;
+    in << "@INFINITE_LOOP" << std::endl;
+    in << "0;JMP" << std::endl << std::endl;
 }
 
 void parser_init_test_case()
@@ -288,6 +314,26 @@ void parser_pc_test_case()
     }
 }
 
+void parser_collect_symbols_test_case()
+{
+    std::stringstream mockStream;
+    mockInputStreamWithSymbols(mockStream);
+    hack::Parser parser(mockStream);
+    parser.collectSymbols();
+
+    auto table = parser.getSymbolTable();
+
+    BOOST_CHECK_MESSAGE(table.size() == 26, "Should be '26' but was " << table.size());
+    BOOST_CHECK_MESSAGE(table.contains("OUTPUT_FIRST") && table.retrieveSymbol("OUTPUT_FIRST") == 10,
+        "Should be '10' but was " << table.retrieveSymbol("OUTPUT_FIRST"));
+
+    BOOST_CHECK_MESSAGE(table.contains("OUTPUT_D") && table.retrieveSymbol("OUTPUT_D") == 12,
+        "Should be '13' but was " << table.retrieveSymbol("OUTPUT_D"));
+
+    BOOST_CHECK_MESSAGE(table.contains("INFINITE_LOOP") && table.retrieveSymbol("INFINITE_LOOP") == 14,
+        "Should be '16' but was " << table.retrieveSymbol("INFINITE_LOOP"));
+}
+
 void parser_assemble_test_case()
 {
     std::stringstream mockStream;
@@ -316,7 +362,49 @@ void parser_assemble_test_case()
     BOOST_CHECK_MESSAGE(actualBinary.size() == expectedBinary.size(), "Should be '6' but was " << actualBinary.size());
     for (int i = 0; i < actualBinary.size(); ++i) {
         BOOST_CHECK_MESSAGE(expectedBinary[i] == actualBinary[i],
-            "Should be '" << expectedBinary[i] << "' but was " << actualBinary[i]);
+            "Should be '" << expectedBinary[i] << "' but was '" << actualBinary[i] << "'");
+    }
+}
+
+void parser_assemble_with_symbols_test_case()
+{
+    std::stringstream mockStream;
+    mockInputStreamWithSymbols(mockStream);
+    hack::Parser parser(mockStream);
+    std::vector<std::string> expectedBinary {
+        "0000000000000000",
+        "1111110000010000",
+        "0000000000000001",
+        "1111010011010000",
+        "0000000000001010",
+        "1110001100000001",
+        "0000000000000001",
+        "1111110000010000",
+        "0000000000001100",
+        "1110101010000111",
+        "0000000000000000",
+        "1111110000010000",
+        "0000000000000010",
+        "1110001100001000",
+        "0000000000001110",
+        "1110101010000111",
+        ""
+    };
+
+    std::stringstream oss;
+    parser.translateAssembly(oss);
+
+    std::string line;
+    std::vector<std::string> actualBinary;
+    while (!oss.eof()) {
+        getline(oss, line);
+        actualBinary.emplace_back(line);
+    }
+
+    BOOST_CHECK_MESSAGE(actualBinary.size() == expectedBinary.size(), "Should be '17' but was " << actualBinary.size());
+    for (int i = 0; i < actualBinary.size(); ++i) {
+        BOOST_CHECK_MESSAGE(expectedBinary[i] == actualBinary[i],
+            "Should be '" << expectedBinary[i] << "' but was '" << actualBinary[i] << "'");
     }
 }
 
