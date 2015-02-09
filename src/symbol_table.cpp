@@ -2,7 +2,7 @@
 #include "../headers/symbol_table.hpp"
 
 namespace hack {
-	SymbolTable::SymbolTable() : _symbolTable(std::unique_ptr<std::map<std::string, int>>(new std::map<std::string, int>()))
+	SymbolTable::SymbolTable() : _symbolTable(std::shared_ptr<std::map<std::string, int>>(new std::map<std::string, int>()))
 	{
 		// insert preset symbols
 		_symbolTable->emplace(std::make_pair("SP", 0));
@@ -53,5 +53,10 @@ namespace hack {
 		}
 
 		return -1;
+	}
+
+	int SymbolTable::size() const
+	{
+		return _symbolTable->size();
 	}
 }

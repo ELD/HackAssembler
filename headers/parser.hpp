@@ -20,11 +20,13 @@ namespace hack {
         std::string getJumpBits();
         std::string translateACode(int);
         void rewind();
+        void collectSymbols();
         void translateAssembly(std::ostream&);
 
         // Accessor methods for testing
         void setCurrentCommand(std::string);
         int getPC() const;
+        SymbolTable getSymbolTable() const;
     private:
         void trimCommand(std::string&);
         bool isWhitespace(std::string&);
@@ -39,6 +41,8 @@ namespace hack {
         size_t _fileHead;
 
         int _pc;
+
+        SymbolTable _symbols;
     };
 }
 

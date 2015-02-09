@@ -22,6 +22,7 @@ void parser_comp_test_case();
 void parser_jump_test_case();
 void parser_all_bits_test_case();
 void parser_pc_test_case();
+void parser_collect_symbols_test_case();
 void parser_assemble_test_case();
 
 void symbol_table_init_test_case();
@@ -44,7 +45,6 @@ int main(int argc, char* argv[])
 
 bool init_function()
 {
-    std::string fileName = framework::master_test_suite().argv[1];
     auto parser_suite = BOOST_TEST_SUITE("Parser_Test_Suite");
     parser_suite->add(BOOST_TEST_CASE(&parser_init_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_command_type_test_case));
@@ -54,6 +54,7 @@ bool init_function()
     parser_suite->add(BOOST_TEST_CASE(&parser_jump_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_all_bits_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_pc_test_case));
+    parser_suite->add(BOOST_TEST_CASE(&parser_collect_symbols_test_case));
     parser_suite->add(BOOST_TEST_CASE(&parser_assemble_test_case));
 
     auto symbol_table_suite = BOOST_TEST_SUITE("Symbol_Table_Test_Suite");
@@ -98,6 +99,23 @@ void mockInputStreamNoSymbols(std::stringstream& in)
     in << "D=D+A" << std::endl;
     in << "@0" << std::endl;
     in << "M=D" << std::endl << std::endl;
+}
+
+void mockInputStreamWithSymbols(std::stringstream& in)
+{
+    in << "@R0" << std::endl;
+    in << "D=A" << std::endl;
+    in << "@15" << std::endl;
+    in << "D=D+A" << std::endl;
+    in << "@variable" << std::endl;
+    in << "D=A" << std::endl;
+    in << "1612" << std::endl;
+    in << "D=D+A" << std::endl;
+    in << "@i" << std::endl;
+    in << "M=D" << std::endl;
+    in << "(END)" << std::endl;
+    in << "@END" << std::endl;
+    in << "0;JMP" << std::endl << std::endl;
 }
 
 void parser_init_test_case()
@@ -286,6 +304,26 @@ void parser_pc_test_case()
         parser.advance();
         BOOST_CHECK_MESSAGE(parser.getPC() == pc, "Should be 0 but was " << parser.getPC());
     }
+}
+
+void parser_collect_symbols_test_case()
+{
+    std::stringstream mockStream;
+    mockInputStreamWithSymbols(mockStream);
+    hack::Parser parser(mockStream);
+    parser.collectSymbols();
+
+    auto table = parser.getSymbolTable();
+
+    BOOST_CHECK_MESSAGE(table.size() == 26, "Should be '26' but was " << table.size());
+    BOOST_CHECK_MESSAGE(table.contains("variable") && table.retrieveSymbol("variable") == 16,
+        "Should be '16' but was " << table.retrieveSymbol("variable"));
+
+    BOOST_CHECK_MESSAGE(table.contains("i") && table.retrieveSymbol("i") == 17,
+        "Should be '17' but was " << table.retrieveSymbol("i"));
+        
+    BOOST_CHECK_MESSAGE(table.contains("END") && table.retrieveSymbol("END") == 10,
+        "Should be '10' but was " << table.retrieveSymbol("END"));
 }
 
 void parser_assemble_test_case()

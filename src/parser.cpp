@@ -154,6 +154,11 @@ namespace hack {
         _file.seekg(_fileHead);
     }
 
+    void Parser::collectSymbols()
+    {
+
+    }
+
     void Parser::translateAssembly(std::ostream& oss)
     {
         while (hasMoreCommands()) {
@@ -184,6 +189,11 @@ namespace hack {
     int Parser::getPC() const
     {
         return _pc;
+    }
+
+    SymbolTable Parser::getSymbolTable() const
+    {
+        return _symbols;
     }
 
     void Parser::trimCommand(std::string& commandToTrim)
