@@ -29,6 +29,7 @@ namespace hack {
         SymbolTable getSymbolTable() const;
     private:
         void trimCommand(std::string&);
+        void trimComments(std::string&);
         bool isWhitespace(std::string&);
 
         // std::unique_ptr<std::ifstream> _file;

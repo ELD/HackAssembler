@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
     }
 
     std::string file(argv[1]);
-    std::ifstream fileHandle(file, std::ios_base::binary);
+    std::ifstream fileHandle(file);
 
     hack::Parser parser(fileHandle);
 
@@ -20,10 +20,10 @@ int main(int argc, char* argv[])
     //
     // parser.rewind();
 
-    std::string outFileName = file.substr(0, file.find_first_of('.'));
-    std::ofstream oss(outFileName + ".hack");
-    parser.translateAssembly(oss);
-    oss.close();
+    std::string outFileName = file.substr(0, file.find_last_of('.'));
+    std::ofstream ofs(outFileName + ".hack");
+    parser.translateAssembly(ofs);
+    ofs.close();
 
     return 0;
 }

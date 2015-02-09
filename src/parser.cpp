@@ -46,6 +46,8 @@ namespace hack {
                 getline(_file, tempCommand);
                 trimCommand(tempCommand);
             } while ((isWhitespace(tempCommand) || tempCommand.substr(0,2) == "//") && hasMoreCommands());
+            trimComments(tempCommand);
+            trimCommand(tempCommand);
             _currentCommand = tempCommand;
         } else {
             _currentCommand = "--ERROR--";
@@ -177,12 +179,17 @@ namespace hack {
         while (hasMoreCommands()) {
             advance();
             if (commandType() == A_COMMAND) {
-                if (_symbols.contains(getSymbol())) {
+                try {
+                    std::stoi(getSymbol());
                     continue;
-                }
+                } catch (std::invalid_argument exc) {
+                    if (_symbols.contains(getSymbol())) {
+                        continue;
+                    }
 
-                _symbols.addSymbol(getSymbol(), _mem);
-                ++_mem;
+                    _symbols.addSymbol(getSymbol(), _mem);
+                    _mem += 1;
+                }
             }
         }
 
@@ -202,7 +209,6 @@ namespace hack {
                 try {
                     value = stoi(getSymbol());
                 } catch (std::invalid_argument exc) {
-                    // std::cout << "Error on symbol: " << getSymbol() << std::endl;
                     value = _symbols.retrieveSymbol(getSymbol());
                 }
 
@@ -237,6 +243,14 @@ namespace hack {
             commandToTrim = commandToTrim.substr(firstPos, (lastPos - firstPos + 1));
 
             commandToTrim.erase(std::remove(commandToTrim.begin(), commandToTrim.end(), '\r'), commandToTrim.end());
+        }
+    }
+
+    void Parser::trimComments(std::string& commandToTrim)
+    {
+        auto commentPos = commandToTrim.find_first_of("//");
+        if (commentPos != std::string::npos) {
+            commandToTrim = commandToTrim.substr(0, commentPos);
         }
     }
 
