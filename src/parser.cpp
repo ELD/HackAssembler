@@ -12,11 +12,6 @@ namespace hack {
         _aCommand.assign("\\@([\\w*|\\d*]*).*", std::regex_constants::icase);
     }
 
-    Parser::~Parser()
-    {
-        // do nothing
-    }
-
     bool Parser::hasMoreCommands()
     {
         bool moreCommands = false;
@@ -90,13 +85,13 @@ namespace hack {
             return "";
         }
 
-        // Check for equal sign
+
         auto index = _currentCommand.find("=");
-        // if no equal sign, return null entry
+
         if (index == std::string::npos) {
             return DestTable::lookup[""];
         }
-        // get substr and find key from dest table
+
         auto dest = _currentCommand.substr(0, index);
 
         return DestTable::lookup[dest];
@@ -161,7 +156,6 @@ namespace hack {
 
     void Parser::collectSymbols()
     {
-        // First pass, L_COMMANDs
         while (hasMoreCommands()) {
             advance();
             if (commandType() == L_COMMAND) {
@@ -175,7 +169,6 @@ namespace hack {
 
         rewind();
 
-        // Second pass, A_COMMANDs
         while (hasMoreCommands()) {
             advance();
             if (commandType() == A_COMMAND) {
@@ -193,9 +186,7 @@ namespace hack {
             }
         }
 
-        // rewind again
         rewind();
-
     }
 
     void Parser::translateAssembly(std::ostream& oss)
@@ -219,7 +210,6 @@ namespace hack {
         }
     }
 
-    // Accessor methods for testing
     void Parser::setCurrentCommand(std::string command)
     {
         _currentCommand = std::move(command);

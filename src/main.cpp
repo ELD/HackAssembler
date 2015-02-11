@@ -11,15 +11,6 @@ int main(int argc, char* argv[])
     std::ifstream fileHandle(file);
 
     hack::Parser parser(fileHandle);
-
-    // while (parser.hasMoreCommands()) {
-    //     parser.advance();
-    //     std::cout << "Command Type: " << parser.commandType() << std::endl;
-    //     std::cout << "Command: " << parser.getCurrentCommand() << std::endl;
-    // }
-    //
-    // parser.rewind();
-
     std::string outFileName = file.substr(0, file.find_last_of('.'));
     std::ofstream ofs(outFileName + ".hack");
     parser.translateAssembly(ofs);

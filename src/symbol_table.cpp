@@ -4,7 +4,6 @@
 namespace hack {
 	SymbolTable::SymbolTable() : _symbolTable(std::shared_ptr<std::map<std::string, int>>(new std::map<std::string, int>()))
 	{
-		// insert preset symbols
 		_symbolTable->emplace(std::make_pair("SP", 0));
 		_symbolTable->emplace(std::make_pair("LCL", 1));
 		_symbolTable->emplace(std::make_pair("ARG", 2));
@@ -28,11 +27,6 @@ namespace hack {
 		_symbolTable->emplace(std::make_pair("R15", 15));
 		_symbolTable->emplace(std::make_pair("SCREEN", 16384));
 		_symbolTable->emplace(std::make_pair("KBD", 24576));
-	}
-
-	SymbolTable::~SymbolTable()
-	{
-		// do nothing
 	}
 
 	void SymbolTable::addSymbol(const std::string& symbol, int address)

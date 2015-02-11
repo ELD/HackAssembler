@@ -9,7 +9,6 @@ namespace hack {
     {
     public:
         Parser (std::istream&);
-        virtual ~Parser ();
         bool hasMoreCommands();
         void advance();
         COMMAND_TYPE commandType() const;
