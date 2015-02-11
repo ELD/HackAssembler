@@ -3,7 +3,7 @@
 ### README:
 1. Eric Dattore
 2. No one else assisted me with this project.
-3. TBD
+3. 10-12 hours, predominately from the learning how to write unit tests in the Boost Unit Test Framework (UTF)
 4. I built and tested this project with the Boost.Test libraries and I also used
     the C++11 regex library that's available in GCC 4.9 and Clang 3.5. The project has a
     Makefile in the root directory that can be run by invoking the ```make``` command.
