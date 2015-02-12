@@ -14,20 +14,7 @@ namespace hack {
 
     bool Parser::hasMoreCommands()
     {
-        bool moreCommands = false;
-        std::string line;
-        auto prevPos = _file.tellg();
-        do {
-            getline(_file, line);
-            if (!isWhitespace(line)) {
-                moreCommands = true;
-                break;
-            }
-        } while (!_file.eof());
-
-        _file.seekg(prevPos);
-
-        return moreCommands;
+        return !_file.eof() || _file.good();
     }
 
     void Parser::advance()
@@ -41,11 +28,13 @@ namespace hack {
                 getline(_file, tempCommand);
                 trimCommand(tempCommand);
             } while ((isWhitespace(tempCommand) || tempCommand.substr(0,2) == "//") && hasMoreCommands());
-            trimComments(tempCommand);
-            trimCommand(tempCommand);
-            _currentCommand = tempCommand;
-        } else {
-            _currentCommand = "--ERROR--";
+            if (tempCommand != "") {
+                trimComments(tempCommand);
+                trimCommand(tempCommand);
+                _currentCommand = tempCommand;
+            } else {
+                _currentCommand = "GARBAGE";
+            }
         }
     }
 
@@ -194,6 +183,10 @@ namespace hack {
         collectSymbols();
         while (hasMoreCommands()) {
             advance();
+            if (_currentCommand == "GARBAGE") {
+                return;
+            }
+            
             if (commandType() == A_COMMAND) {
                 int value;
 
