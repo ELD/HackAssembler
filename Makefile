@@ -14,7 +14,7 @@ hackasm_TEST_SOURCES := $(shell find $(hackasm_TEST_SRCDIR) -type f -name *.$(ha
 hackasm_EXPERIMENTAL_SOURCES := $(shell find $(hackasm_EXPERIMENTAL_SRCDIR) -type f -name *.$(hackasm_SRCEXT))
 hackasm_OBJECTS := $(patsubst $(hackasm_SRCDIR)/%,$(hackasm_BUILDDIR)/%,$(hackasm_SOURCES:.$(hackasm_SRCEXT)=.o))
 hackasm_TEST_OBJECTS := $(shell find $(hackasm_BUILDDIR) -type f -name *.o ! -name main.o)
-CXXFLAGS += -g -Wall -std=c++11 -stdlib=libc++ -O3 -flto
+CXXFLAGS += -g -Wall -std=c++11 -O3 -flto
 LDFLAGS += -lboost_unit_test_framework -lboost_system -L $(BOOST_LIBS)/lib
 LIB :=
 INC := -I headers
