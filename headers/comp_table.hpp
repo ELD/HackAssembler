@@ -7,7 +7,7 @@ namespace hack {
 	class CompTable
 	{
 	public:
-		typedef std::map<std::string, std::pair<std::string, std::string>> CompBits;
+		typedef std::unordered_map<std::string, std::pair<std::string, std::string>> CompBits;
 		static CompBits lookup;
 	};
 }

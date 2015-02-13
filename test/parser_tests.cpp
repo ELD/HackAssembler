@@ -193,7 +193,7 @@ void parser_collect_symbols_test_case()
     std::stringstream mockStream;
     mockInputStreamWithSymbols(mockStream);
     hack::Parser parser(mockStream);
-    parser.collectSymbols();
+    parser.collectLabels();
 
     auto table = parser.getSymbolTable();
 

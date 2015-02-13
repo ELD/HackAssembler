@@ -6,7 +6,7 @@
 namespace hack {
 	class JumpTable {
 	public:
-		typedef std::map<std::string, std::string> JumpBits;
+		typedef std::unordered_map<std::string, std::string> JumpBits;
 		static JumpBits lookup;
 	};
 }

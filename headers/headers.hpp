@@ -8,6 +8,7 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <unordered_map>
 #include <memory>
 #include <regex>
 #include <utility>

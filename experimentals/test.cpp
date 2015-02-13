@@ -5,25 +5,25 @@
 
 using namespace std;
 
-void istream_inject(std::istream&);
+void mockIstream(stringstream&);
 
 int main(int argc, char* argv[])
 {
-    if (argc < 2) {
-        cout << "No arguments passed in." << endl;
-        return -1;
+    stringstream oss;
+    mockIstream(oss);
+
+    std::string line;
+    while (!oss.eof()) {
+        getline(oss, line);
+        std::cout << "Line: " << line << "\tEOF?:" << oss.eof() << std::endl;
     }
-
-    ifstream inFile(argv[1]);
-    istream_inject(inFile);
-
-    istringstream inString("This is a test");
-    istream_inject(inString);
 }
 
-void istream_inject(std::istream& streamIn)
+void mockIstream(stringstream& mock)
 {
-    string line;
-    getline(streamIn, line);
-    cout << line << endl;
+    mock << "Test" << std::endl;
+    mock << "Test 2" << std::endl;
+    mock << "Test 3" << std::endl;
+    mock << "Test 4" << std::endl;
+    mock << "Test 5" << std::endl << std::endl;
 }
