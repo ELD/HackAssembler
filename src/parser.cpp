@@ -16,10 +16,10 @@ namespace hack {
 
     bool Parser::hasMoreCommands()
     {
-        return !_file.eof() || _file.good();
+        return !_file.eof();
     }
 
-    void Parser::advance()
+    bool Parser::advance()
     {
         if (hasMoreCommands()) {
             if (commandType() != L_COMMAND) {
@@ -34,10 +34,14 @@ namespace hack {
                 trimComments(tempCommand);
                 trimCommand(tempCommand);
                 _currentCommand = tempCommand;
+                return true;
             } else {
                 _currentCommand = "GARBAGE";
+                return false;
             }
         }
+
+        return false;
     }
 
     COMMAND_TYPE Parser::commandType() const
@@ -147,8 +151,7 @@ namespace hack {
 
     void Parser::collectLabels()
     {
-        while (hasMoreCommands()) {
-            advance();
+        while (advance()) {
             if (commandType() == L_COMMAND) {
                 if (_symbols.contains(getSymbol())) {
                     continue;
@@ -164,9 +167,7 @@ namespace hack {
     void Parser::translateAssembly(std::ostream& oss)
     {
         collectLabels();
-        while (hasMoreCommands()) {
-            advance();
-
+        while (advance()) {
             if (_currentCommand == "GARBAGE") {
                 return;
             }
