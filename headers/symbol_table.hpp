@@ -14,7 +14,7 @@ namespace hack {
 		int size() const;
 
 	private:
-		std::shared_ptr<std::map<std::string, int>> _symbolTable;
+		std::map<std::string, int> _symbolTable;
 	};
 }
 
