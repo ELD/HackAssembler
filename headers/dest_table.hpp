@@ -6,7 +6,7 @@
 namespace hack {
 	class DestTable {
 	public:
-		typedef std::unordered_map<std::string, std::string> DestBits;
+		typedef std::map<std::string, std::string> DestBits;
 		static DestBits lookup;
 	};
 }

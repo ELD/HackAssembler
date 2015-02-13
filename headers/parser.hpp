@@ -10,7 +10,7 @@ namespace hack {
     public:
         Parser (std::istream&);
         bool hasMoreCommands();
-        void advance();
+        bool advance();
         COMMAND_TYPE commandType() const;
         std::string getCurrentCommand() const;
         std::string getSymbol();
