@@ -1,5 +1,7 @@
 #include "../headers/parser.hpp"
 
+// TODO: Rewrite first pass for optimization; only collect labels
+
 namespace hack {
 
     Parser::Parser(std::istream& file) : _file(file)
@@ -186,7 +188,7 @@ namespace hack {
             if (_currentCommand == "GARBAGE") {
                 return;
             }
-            
+
             if (commandType() == A_COMMAND) {
                 int value;
 
