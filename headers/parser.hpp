@@ -19,7 +19,7 @@ namespace hack {
         std::string getJumpBits();
         std::string translateACode(int);
         void rewind();
-        void collectSymbols();
+        void collectLabels();
         void translateAssembly(std::ostream&);
 
         // Accessor methods for testing

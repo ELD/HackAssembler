@@ -145,7 +145,7 @@ namespace hack {
         _file.seekg(_fileHead);
     }
 
-    void Parser::collectSymbols()
+    void Parser::collectLabels()
     {
         while (hasMoreCommands()) {
             advance();
@@ -159,32 +159,14 @@ namespace hack {
         }
 
         rewind();
-
-        while (hasMoreCommands()) {
-            advance();
-            if (commandType() == A_COMMAND) {
-                try {
-                    std::stoi(getSymbol());
-                    continue;
-                } catch (std::invalid_argument exc) {
-                    if (_symbols.contains(getSymbol())) {
-                        continue;
-                    }
-
-                    _symbols.addSymbol(getSymbol(), _mem);
-                    _mem += 1;
-                }
-            }
-        }
-
-        rewind();
     }
 
     void Parser::translateAssembly(std::ostream& oss)
     {
-        collectSymbols();
+        collectLabels();
         while (hasMoreCommands()) {
             advance();
+
             if (_currentCommand == "GARBAGE") {
                 return;
             }
@@ -195,7 +177,13 @@ namespace hack {
                 try {
                     value = stoi(getSymbol());
                 } catch (std::invalid_argument exc) {
-                    value = _symbols.retrieveSymbol(getSymbol());
+                    if (_symbols.contains(getSymbol())) {
+                        value = _symbols.retrieveSymbol(getSymbol());
+                    } else {
+                        value = _mem;
+                        _symbols.addSymbol(getSymbol(), _mem);
+                        ++_mem;
+                    }
                 }
 
                 oss << "0" + translateACode(value) << std::endl;
