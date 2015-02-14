@@ -31,7 +31,6 @@ namespace hack {
         void trimComments(std::string&);
         bool isWhitespace(std::string&);
 
-        // std::unique_ptr<std::ifstream> _file;
         std::istream& _file;
         std::string _currentCommand;
 
