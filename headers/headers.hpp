@@ -1,17 +1,12 @@
 #ifndef _HEADERS_H_
 #define _HEADERS_H_
 
-#include <algorithm>
-#include <bitset>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <map>
-#include <unordered_map>
-#include <memory>
 #include <regex>
-#include <utility>
 #include "command_type.hpp"
 #include "comp_table.hpp"
 #include "dest_table.hpp"

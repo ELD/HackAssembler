@@ -1,7 +1,5 @@
 #include "../headers/parser.hpp"
 
-// TODO: Rewrite first pass for optimization; only collect labels
-
 namespace hack {
 
     Parser::Parser(std::istream& file) : _file(file)
